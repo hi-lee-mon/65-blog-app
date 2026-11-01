@@ -42,4 +42,4 @@ git のルートは一つ上の `65-blog-app/` で、Next.js アプリは `blog-
 
 ## Next.js の設定
 
-Next.js 16.3 を使う。`next.config.ts` で `cacheComponents`、`partialPrefetching`、`reactCompiler` を有効にしており、`experimental` で `turbopackRustReactCompiler` と `useOffline` も試している。API を使う前に `node_modules/next/dist/docs/` の該当ガイドを読む。Cache Components の移行・最適化や、実行中のアプリでの動作確認には、`.claude/skills/` にあるスキル（`next-cache-components-*`、`next-dev-loop`、`agent-browser`）を使う。
+Next.js 16.4 を使う。`next.config.ts` で `cacheComponents`、`partialPrefetching`、`reactCompiler` を有効にしており、`experimental` で `turbopackRustReactCompiler` と `useOffline` も試している。API を使う前に `node_modules/next/dist/docs/` の該当ガイドを読む。Cache Components の移行・最適化や、実行中のアプリでの動作確認には、`.claude/skills/` にあるスキル（`next-cache-components-*`、`next-dev-loop`、`agent-browser`）を使う。
