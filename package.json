@@ -18,6 +18,7 @@
     "next": "16.4.1",
     "react": "19.2.9",
     "react-dom": "19.2.9",
+    "valibot": "1.5.0",
     "vfile": "6.0.3",
     "vfile-matter": "5.0.1"
   },

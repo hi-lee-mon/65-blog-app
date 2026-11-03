@@ -5,13 +5,18 @@ import path from "node:path";
 import * as runtime from "react/jsx-runtime";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import * as v from "valibot";
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
-type MyFrontmatter = {
-  title: string;
-  date: string;
-};
+const FrontmatterSchema = v.object({
+  title: v.pipe(v.string(), v.nonEmpty()),
+  date: v.pipe(v.string(), v.isoDate()),
+});
+
+function isFileNotFound(error: unknown) {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
 
 export function createPostReader(contentDir: string) {
   async function readPostFile(slug: string) {
@@ -21,8 +26,15 @@ export function createPostReader(contentDir: string) {
       value: await readFile(filePath, "utf8"),
     });
     matter(file, { strip: true });
-    const frontmatter = file.data.matter as MyFrontmatter;
-    return { file, frontmatter };
+    const result = v.safeParse(FrontmatterSchema, file.data.matter);
+
+    if (!result.success) {
+      throw new Error(
+        `${slug}.mdx の frontmatter が正しくありません\n${v.summarize(result.issues)}`,
+      );
+    }
+
+    return { file, frontmatter: result.output };
   }
 
   async function getPost(slug: string) {
@@ -44,8 +56,9 @@ export function createPostReader(contentDir: string) {
       });
 
       return { frontmatter, Content };
-    } catch {
-      return null;
+    } catch (error) {
+      if (isFileNotFound(error)) return null;
+      throw error;
     }
   }
 
