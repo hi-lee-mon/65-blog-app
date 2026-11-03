@@ -16,7 +16,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `bun dev`: 開発サーバー
 - `bun run build`: 本番ビルド
-- `bun run lint`: ESLint（`eslint-config-next` の core-web-vitals と typescript）
+- `bun run lint`: oxlint（設定は `.oxlintrc.json`）
+- `bun run format`: oxfmt で整形する。`bun run format:check` は確認だけ
 
 テストランナーはまだ入っていない。Vitest（コンポーネント）と Playwright（画面操作）を試す予定。
 
