@@ -6,6 +6,8 @@ import * as runtime from "react/jsx-runtime";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import * as v from "valibot";
+import rehypeSlug from "rehype-slug";
+import { rehypeCollectHeadings } from "./rehypeCollectHeadings";
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 const TAG_PATTERN = /^[a-z0-9]{1,18}$/;
@@ -47,6 +49,8 @@ export function createPostReader(contentDir: string) {
       const { default: Content } = await evaluate(file, {
         ...runtime,
         rehypePlugins: [
+          rehypeSlug,
+          rehypeCollectHeadings,
           [
             rehypeShiki,
             {
@@ -57,7 +61,7 @@ export function createPostReader(contentDir: string) {
         ],
       });
 
-      return { frontmatter, Content };
+      return { frontmatter, Content, headings: file.data.headings ?? [] };
     } catch (error) {
       if (isFileNotFound(error)) return null;
       throw error;

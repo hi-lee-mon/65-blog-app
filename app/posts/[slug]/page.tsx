@@ -20,7 +20,8 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
     notFound();
   }
 
-  const { frontmatter, Content } = post;
+  const { frontmatter, Content, headings } = post;
+
   return (
     <article>
       <h1>{frontmatter.title}</h1>
@@ -32,6 +33,17 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
           </li>
         ))}
       </ul>
+      {headings.length > 0 && (
+        <nav aria-label="目次">
+          <ol>
+            {headings.map(({ id, text }) => (
+              <li key={id}>
+                <a href={`#${id}`}>{text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
       <hr />
       <Content />
     </article>
