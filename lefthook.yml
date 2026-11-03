@@ -3,18 +3,18 @@ pre-commit:
   jobs:
     - name: format
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,css,yml,yaml}"
-      run: bunx oxfmt {staged_files}
+      run: bun run oxfmt {staged_files}
       stage_fixed: true
 
     - name: oxlint
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}"
-      run: bunx oxlint {staged_files}
+      run: bun run oxlint {staged_files}
 
     - name: markuplint
       glob:
         - "app/**/*.tsx"
         - "content/**/*.mdx"
-      run: bunx markuplint {staged_files}
+      run: bun run markuplint {staged_files}
 
     # 型の誤りはステージしていないファイルにも波及するので、ファイルを絞らずプロジェクト全体を見る
     - name: typecheck

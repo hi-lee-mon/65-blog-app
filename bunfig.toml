@@ -1,0 +1,10 @@
+[install]
+# 公開から3日（259200秒）たっていない版は入れない
+minimumReleaseAge = 259200
+# bun add で ^ を付けず、版を固定して package.json に書く
+exact = true
+
+[install.security]
+# インストール前に、各パッケージが既知のマルウェアでないかを Socket に問い合わせる。
+# API キーなしの無料モードでは「pkg:npm/名前@版」だけを送る（dist/index.js の unauthenticated() で確認）
+scanner = "@socketsecurity/bun-security-scanner"

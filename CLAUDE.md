@@ -43,6 +43,7 @@ git のルートは一つ上の `65-blog-app/` で、Next.js アプリは `blog-
 - コードの色付けは、ビルド時に Shiki で行う
 - アクセス解析は Cloudflare Web Analytics を使う
 - スタイリングは今は create-next-app 由来の Tailwind CSS v4 だが、Panda CSS で自作のデザインシステムを組む予定（参考: デジタル庁デザインシステム、Apple Human Interface Guidelines）
+- 依存パッケージは版を固定する（`^` を付けない）。公開から3日たっていない版は `bunfig.toml` の `minimumReleaseAge` で入らない。依存のインストール時スクリプトは `trustedDependencies: []` で止めているので、足すときは理由を ADR に書く。CLI は `bunx` ではなく `devDependencies` に入れて `bun run` で動かす（ADR `20261103-1657-supply-chain-hardening.md`）
 
 ## Next.js の設定
 
