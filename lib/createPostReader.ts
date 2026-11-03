@@ -8,10 +8,12 @@ import { matter } from "vfile-matter";
 import * as v from "valibot";
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
+const TAG_PATTERN = /^[a-z0-9]{1,18}$/;
 
 const FrontmatterSchema = v.object({
   title: v.pipe(v.string(), v.nonEmpty()),
   date: v.pipe(v.string(), v.isoDate()),
+  tags: v.pipe(v.array(v.pipe(v.string(), v.regex(TAG_PATTERN))), v.minLength(1), v.maxLength(5)),
 });
 
 function isFileNotFound(error: unknown) {
@@ -78,5 +80,16 @@ export function createPostReader(contentDir: string) {
     return posts.toSorted((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
   }
 
-  return { getPost, getAllSlugs, getAllPosts };
+  async function getAllTags() {
+    const posts = await getAllPosts();
+    const tags = posts.flatMap((post) => post.frontmatter.tags);
+    return [...new Set(tags)].toSorted();
+  }
+
+  async function getPostsByTag(tag: string) {
+    const posts = await getAllPosts();
+    return posts.filter((post) => post.frontmatter.tags.includes(tag));
+  }
+
+  return { getPost, getAllSlugs, getAllPosts, getAllTags, getPostsByTag };
 }

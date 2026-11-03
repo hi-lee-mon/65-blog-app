@@ -1,6 +1,7 @@
 import path from "node:path";
 import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -24,6 +25,14 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
     <article>
       <h1>{frontmatter.title}</h1>
       <time>{frontmatter.date}</time>
+      <ul>
+        {frontmatter.tags.map((tag) => (
+          <li key={tag}>
+            <Link href={`/tags/${tag}`}>{tag}</Link>
+          </li>
+        ))}
+      </ul>
+      <hr />
       <Content />
     </article>
   );
