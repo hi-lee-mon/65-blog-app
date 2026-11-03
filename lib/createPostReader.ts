@@ -13,16 +13,21 @@ type MyFrontmatter = {
 };
 
 export function createPostReader(contentDir: string) {
+  async function readPostFile(slug: string) {
+    const filePath = path.join(contentDir, `${slug}.mdx`);
+    const file = new VFile({
+      path: filePath,
+      value: await readFile(filePath, "utf8"),
+    });
+    matter(file, { strip: true });
+    const frontmatter = file.data.matter as MyFrontmatter;
+    return { file, frontmatter };
+  }
+
   async function getPost(slug: string) {
     if (!SLUG_PATTERN.test(slug)) return null;
     try {
-      const filePath = path.join(contentDir, `${slug}.mdx`);
-      const file = new VFile({
-        path: filePath,
-        value: await readFile(path.join(contentDir, `${slug}.mdx`), "utf8"),
-      });
-      matter(file, { strip: true });
-      const frontmatter = file.data.matter as MyFrontmatter;
+      const { file, frontmatter } = await readPostFile(slug);
       const { default: Content } = await evaluate(file, runtime);
       return { frontmatter, Content };
     } catch {
@@ -37,5 +42,18 @@ export function createPostReader(contentDir: string) {
       .map((file) => file.replace(/\.mdx$/, ""));
   }
 
-  return { getPost, getAllSlugs };
+  async function getAllPosts() {
+    const slugs = await getAllSlugs();
+    const posts = await Promise.all(
+      slugs.map(async (slug) => {
+        const { frontmatter } = await readPostFile(slug);
+        return { slug, frontmatter };
+      }),
+    );
+    return posts.toSorted((a, b) =>
+      b.frontmatter.date.localeCompare(a.frontmatter.date),
+    );
+  }
+
+  return { getPost, getAllSlugs, getAllPosts };
 }
