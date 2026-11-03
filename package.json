@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "lefthook install",
     "dev": "next dev",
     "build": "bun run typecheck && next build",
     "start": "next start",
@@ -27,6 +28,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "lefthook": "^2.2.2",
     "markuplint": "^5.4.0",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",

@@ -20,6 +20,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run typecheck`: `next typegen` でルートの型を作り、tsrs（TypeScript 7 の Rust 移植）で型検査する。`bun run build` も最初にこれを実行する。`next build` 自身の型検査は切ってある。`typescript` パッケージの中身は TypeScript 6 なので、`bunx tsc` は 6 で動く（ADR `20261103-1640-markuplint-with-typescript6.md`）
 - `bun run format`: oxfmt で整形する。`bun run format:check` は確認だけ
 
+コミットの直前に lefthook（設定は `lefthook.yml`）が format・oxlint・markuplint・typecheck を並列に実行する。フックは `bun install` のときに `prepare` スクリプトが入れる（ADR `20261103-1710-pre-commit-with-lefthook.md`）。
+
 テストランナーはまだ入っていない。Vitest（コンポーネント）と Playwright（画面操作）を試す予定。
 
 ## 構成
