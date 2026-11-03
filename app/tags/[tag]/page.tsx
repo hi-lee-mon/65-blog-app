@@ -2,12 +2,19 @@ import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPostReader } from "../../../lib/createPostReader";
+import { Metadata } from "next";
 
 const { getAllTags, getPostsByTag } = createPostReader(path.join(process.cwd(), "content"));
 
 export async function generateStaticParams() {
   const tags = await getAllTags();
   return tags.map((tag) => ({ tag }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/tags/[tag]">): Promise<Metadata> {
+  // paramsはこのファイルの上部にあるgenerateStaticParams によってstaticになっているのでcache不要
+  const { tag } = await params;
+  return { title: `タグ: ${tag}` };
 }
 
 export default async function Page({ params }: PageProps<"/tags/[tag]">) {

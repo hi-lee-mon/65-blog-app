@@ -3,6 +3,7 @@ import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
+import { siteOpenGraph } from "../../../lib/siteMetadata";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -18,7 +19,14 @@ export async function generateMetadata({ params }: PageProps<"/posts/[slug]">): 
   const post = await getPost(slug);
   if (!post) return {};
 
-  return { title: post.frontmatter.title };
+  return {
+    title: post.frontmatter.title,
+    openGraph: {
+      ...siteOpenGraph,
+      type: "article",
+      publishedTime: post.frontmatter.date,
+    },
+  };
 }
 
 export default async function Page({ params }: PageProps<"/posts/[slug]">) {

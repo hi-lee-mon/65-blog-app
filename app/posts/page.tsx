@@ -1,8 +1,13 @@
 import path from "node:path";
 import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
+import { Metadata } from "next";
 
 const { getAllPosts } = createPostReader(path.join(process.cwd(), "content"));
+
+export const metadata: Metadata = {
+  title: "記事一覧",
+};
 
 export default async function Page() {
   "use cache";
