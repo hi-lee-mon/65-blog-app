@@ -2,12 +2,23 @@ import path from "node:path";
 import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Metadata } from "next";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/posts/[slug]">): Promise<Metadata> {
+  "use cache";
+
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) return {};
+
+  return { title: post.frontmatter.title };
 }
 
 export default async function Page({ params }: PageProps<"/posts/[slug]">) {
