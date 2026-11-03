@@ -37,9 +37,7 @@ export function createPostReader(contentDir: string) {
 
   async function getAllSlugs(): Promise<string[]> {
     const files = await readdir(contentDir);
-    return files
-      .filter((file) => file.endsWith(".mdx"))
-      .map((file) => file.replace(/\.mdx$/, ""));
+    return files.filter((file) => file.endsWith(".mdx")).map((file) => file.replace(/\.mdx$/, ""));
   }
 
   async function getAllPosts() {
@@ -50,9 +48,7 @@ export function createPostReader(contentDir: string) {
         return { slug, frontmatter };
       }),
     );
-    return posts.toSorted((a, b) =>
-      b.frontmatter.date.localeCompare(a.frontmatter.date),
-    );
+    return posts.toSorted((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
   }
 
   return { getPost, getAllSlugs, getAllPosts };

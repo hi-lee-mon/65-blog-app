@@ -8,20 +8,20 @@
 
 「記事を表示する」までの段のうち、2段目にあたる。
 
-| Step | 内容 | 進捗 |
-|---|---|---|
-| 1-1 | 記事1本を `/posts/[slug]` に表示する | ■■■ 完了 |
-| 1-2 | `/posts` に記事の一覧を出す | ■□□ ← いまここ |
-| 1-3 | Shiki でコードブロックに色を付ける | □□□ |
-| 1-4 | Valibot で frontmatter の中身を検査し、`as` を取り除く | □□□ |
+| Step | 内容                                                   | 進捗           |
+| ---- | ------------------------------------------------------ | -------------- |
+| 1-1  | 記事1本を `/posts/[slug]` に表示する                   | ■■■ 完了       |
+| 1-2  | `/posts` に記事の一覧を出す                            | ■□□ ← いまここ |
+| 1-3  | Shiki でコードブロックに色を付ける                     | □□□            |
+| 1-4  | Valibot で frontmatter の中身を検査し、`as` を取り除く | □□□            |
 
 ## 作るもの
 
-| パス（リポジトリ直下から） | 中身 |
-|---|---|
-| `app/posts/page.tsx` | 記事一覧のページ（新規） |
-| `lib/createPostReader.ts` | 一覧用の `getAllPosts` を足す。あわせて、原稿を開いて frontmatter を読む部分を `readPostFile` に切り出す |
-| `content/lib-or-util.mdx` | frontmatter が読めていない原稿を直す |
+| パス（リポジトリ直下から） | 中身                                                                                                     |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `app/posts/page.tsx`       | 記事一覧のページ（新規）                                                                                 |
+| `lib/createPostReader.ts`  | 一覧用の `getAllPosts` を足す。あわせて、原稿を開いて frontmatter を読む部分を `readPostFile` に切り出す |
+| `content/lib-or-util.mdx`  | frontmatter が読めていない原稿を直す                                                                     |
 
 依存パッケージは増えない。
 
@@ -37,13 +37,13 @@
 
 ### 現時点のバージョン（2026-11-03 確認）
 
-| パッケージ | 入っている版 | npm の最新版 |
-|---|---|---|
-| `next` | 16.4.1 | 16.4.4 |
-| `react` | 19.2.9 | 19.3.1 |
-| `@mdx-js/mdx` | 3.1.1 | 3.1.1 |
-| `vfile` | 6.0.3 | 6.0.3 |
-| `vfile-matter` | 5.0.1 | 5.0.1 |
+| パッケージ     | 入っている版 | npm の最新版 |
+| -------------- | ------------ | ------------ |
+| `next`         | 16.4.1       | 16.4.4       |
+| `react`        | 19.2.9       | 19.3.1       |
+| `@mdx-js/mdx`  | 3.1.1        | 3.1.1        |
+| `vfile`        | 6.0.3        | 6.0.3        |
+| `vfile-matter` | 5.0.1        | 5.0.1        |
 
 `next` と `react` は最新版より古いが、このチケットでは上げない。
 
@@ -223,9 +223,7 @@ export function createPostReader(contentDir: string) {
 
   async function getAllSlugs(): Promise<string[]> {
     const files = await readdir(contentDir);
-    return files
-      .filter((file) => file.endsWith(".mdx"))
-      .map((file) => file.replace(/\.mdx$/, ""));
+    return files.filter((file) => file.endsWith(".mdx")).map((file) => file.replace(/\.mdx$/, ""));
   }
 
   async function getAllPosts() {
@@ -298,16 +296,16 @@ grep -o '<main>.*</main>' .next/server/app/posts.html
 `lib/createPostReader.ts` の `getAllPosts` だけを、次のように書き換える。
 
 ```ts
-  async function getAllPosts() {
-    const slugs = await getAllSlugs();
-    const posts = await Promise.all(
-      slugs.map(async (slug) => {
-        const { frontmatter } = await readPostFile(slug);
-        return { slug, frontmatter };
-      }),
-    );
-    return posts.sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
-  }
+async function getAllPosts() {
+  const slugs = await getAllSlugs();
+  const posts = await Promise.all(
+    slugs.map(async (slug) => {
+      const { frontmatter } = await readPostFile(slug);
+      return { slug, frontmatter };
+    }),
+  );
+  return posts.sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
+}
 ```
 
 ビルドして、結果を見る。
@@ -373,9 +371,7 @@ export function createPostReader(contentDir: string) {
 
   async function getAllSlugs(): Promise<string[]> {
     const files = await readdir(contentDir);
-    return files
-      .filter((file) => file.endsWith(".mdx"))
-      .map((file) => file.replace(/\.mdx$/, ""));
+    return files.filter((file) => file.endsWith(".mdx")).map((file) => file.replace(/\.mdx$/, ""));
   }
 
   async function getAllPosts() {
@@ -416,11 +412,11 @@ date: 2026-11-02
 ---
 ````
 
-1行目に ```` ```markdown ```` がある。frontmatter が Markdown のコードブロックの中に入ってしまっている。
+1行目に ` ```markdown ` がある。frontmatter が Markdown のコードブロックの中に入ってしまっている。
 
 #### 3-b：`vfile-matter` から何が見えていたかを考える
 
-`vfile-matter` は、ファイルの**1行目**が `---` のときだけ、そこから次の `---` までを frontmatter として読む。いまの1行目は ```` ```markdown ```` なので、frontmatter はないものとみなされる。そのとき `file.data.matter` に入るのは `{}`、つまり空のオブジェクトになる（実測済み）。
+`vfile-matter` は、ファイルの**1行目**が `---` のときだけ、そこから次の `---` までを frontmatter として読む。いまの1行目は ` ```markdown ` なので、frontmatter はないものとみなされる。そのとき `file.data.matter` に入るのは `{}`、つまり空のオブジェクトになる（実測済み）。
 
 ここで `readPostFile` の次の行を見直す。
 
@@ -438,15 +434,14 @@ const frontmatter = file.data.matter as MyFrontmatter;
 
 `content/lib-or-util.mdx` を開き、次の2行を消す。
 
-- 1行目の ```` ```markdown ````
-- frontmatter の終わりの `---` の次の行にある ```` ``` ````
+- 1行目の ` ```markdown `
+- frontmatter の終わりの `---` の次の行にある ` ``` `
 
 直したあとの先頭は次の形になる。
 
 ```mdx
 ---
 title: libとutilの使い分けルール
-
 date: 2026-11-02
 ---
 
@@ -538,12 +533,12 @@ lib-or-util.mdx は frontmatter がコードブロックに入っていて読め
 
 上の2行は実際に出たエラー。下の2行は起きると予想されるもので、文面は確かめていない。
 
-| 症状 | 原因と対処 |
-|---|---|
+| 症状                                                                       | 原因と対処                                                                                                 |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `TypeError: Cannot read properties of undefined (reading 'localeCompare')` | `content/` に frontmatter の `date` がない原稿がある。手順 4 の `a-draft.mdx` を消し忘れていないか確かめる |
-| 一覧に `<time></time>` と中身のない `<a>` の行がある | その原稿の frontmatter が読めていない。1行目が `---` になっているかを見る（手順 3） |
-| `grep` が何も出さない（未確認） | ビルドが失敗していて `posts.html` が作られていない。`bun run build` の出力を先に見る |
-| `Cannot find module '../../lib/createPostReader'`（未確認） | `app/posts/page.tsx` の置き場所が違う。`app/posts/[slug]/` の中ではなく、`app/posts/` の直下に置く |
+| 一覧に `<time></time>` と中身のない `<a>` の行がある                       | その原稿の frontmatter が読めていない。1行目が `---` になっているかを見る（手順 3）                        |
+| `grep` が何も出さない（未確認）                                            | ビルドが失敗していて `posts.html` が作られていない。`bun run build` の出力を先に見る                       |
+| `Cannot find module '../../lib/createPostReader'`（未確認）                | `app/posts/page.tsx` の置き場所が違う。`app/posts/[slug]/` の中ではなく、`app/posts/` の直下に置く         |
 
 ここに載っていないエラーが出たら、そのまま貼って聞いてほしい。
 

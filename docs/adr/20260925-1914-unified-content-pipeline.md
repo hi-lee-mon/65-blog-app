@@ -11,11 +11,11 @@
 
 unified（Markdown を構文木に変換し、プラグインで加工して出力する仕組み）を中心に、読み込み処理を自前で組む。2026-09 時点で次のパッケージを使う。
 
-| 役割 | パッケージ |
-|---|---|
-| frontmatter | `vfile-matter`、`yaml` |
+| 役割            | パッケージ                                 |
+| --------------- | ------------------------------------------ |
+| frontmatter     | `vfile-matter`、`yaml`                     |
 | Markdown の変換 | `unified`、`remark-parse`、`remark-rehype` |
-| MDX | `@mdx-js/mdx` |
+| MDX             | `@mdx-js/mdx`                              |
 
 ## 理由
 

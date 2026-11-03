@@ -2,9 +2,7 @@ import path from "node:path";
 import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
 
-const { getAllSlugs, getPost } = createPostReader(
-  path.join(process.cwd(), "content"),
-);
+const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();

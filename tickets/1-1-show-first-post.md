@@ -8,22 +8,22 @@
 
 「記事を表示する」までを5段に分けた、その1段目。
 
-| Step | 内容 | 進捗 |
-|---|---|---|
-| 1-1 | 記事1本を `/posts/[slug]` に表示する | ■□□ ← いまここ |
-| 1-2 | `/posts` に記事の一覧を出す | □□□ |
-| 1-3 | Shiki でコードブロックに色を付ける | □□□ |
-| 1-4 | Valibot で frontmatter の中身を検査し、`lib/createPostReader.ts` の `file.data.matter as MyFrontmatter` のような `as` を取り除く | □□□ |
+| Step | 内容                                                                                                                             | 進捗           |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 1-1  | 記事1本を `/posts/[slug]` に表示する                                                                                             | ■□□ ← いまここ |
+| 1-2  | `/posts` に記事の一覧を出す                                                                                                      | □□□            |
+| 1-3  | Shiki でコードブロックに色を付ける                                                                                               | □□□            |
+| 1-4  | Valibot で frontmatter の中身を検査し、`lib/createPostReader.ts` の `file.data.matter as MyFrontmatter` のような `as` を取り除く | □□□            |
 
 1-2 以降は、このチケットが終わってから起票する。
 
 ## 作るもの
 
-| パス（リポジトリ直下から） | 中身 |
-|---|---|
-| `content/hello.mdx` | 記事の原稿1本 |
-| `blog-app/lib/posts.ts` | 原稿を読み込む処理。Next.js の機能は使わない |
-| `blog-app/app/posts/[slug]/page.tsx` | 記事ページ |
+| パス（リポジトリ直下から）           | 中身                                         |
+| ------------------------------------ | -------------------------------------------- |
+| `content/hello.mdx`                  | 記事の原稿1本                                |
+| `blog-app/lib/posts.ts`              | 原稿を読み込む処理。Next.js の機能は使わない |
+| `blog-app/app/posts/[slug]/page.tsx` | 記事ページ                                   |
 
 依存パッケージを3つ足す（`@mdx-js/mdx`、`vfile`、`vfile-matter`）。
 
@@ -41,13 +41,13 @@
 
 ### 現時点のバージョン（2026-09-25 に `npm view` で確認）
 
-| パッケージ | バージョン | 役割 |
-|---|---|---|
-| `@mdx-js/mdx` | 3.1.1 | MDX を React コンポーネントに変える |
-| `vfile` | 6.0.3 | 「中身＋メタ情報」をまとめて持つファイルの入れ物 |
-| `vfile-matter` | 5.0.1 | 原稿先頭の frontmatter を読んで `file.data.matter` に入れる |
-| `yaml` | 2.9.1 | `vfile-matter` が内部で使う。直接は入れない |
-| `unified` / `remark-parse` / `remark-rehype` | 11.0.5 / 11.0.0 / 11.1.2 | `@mdx-js/mdx` が内部で使う。直接は入れない |
+| パッケージ                                   | バージョン               | 役割                                                        |
+| -------------------------------------------- | ------------------------ | ----------------------------------------------------------- |
+| `@mdx-js/mdx`                                | 3.1.1                    | MDX を React コンポーネントに変える                         |
+| `vfile`                                      | 6.0.3                    | 「中身＋メタ情報」をまとめて持つファイルの入れ物            |
+| `vfile-matter`                               | 5.0.1                    | 原稿先頭の frontmatter を読んで `file.data.matter` に入れる |
+| `yaml`                                       | 2.9.1                    | `vfile-matter` が内部で使う。直接は入れない                 |
+| `unified` / `remark-parse` / `remark-rehype` | 11.0.5 / 11.0.0 / 11.1.2 | `@mdx-js/mdx` が内部で使う。直接は入れない                  |
 
 ADR `20260925-1914-unified-content-pipeline.md` には `yaml`・`unified`・`remark-parse`・`remark-rehype` も並んでいるが、どれも上の3つの依存として自動で入る。直接 import するのは、Zenn・Qiita 用の変換を書くときになる見込み。
 
@@ -88,8 +88,6 @@ ADR `20260925-1914-unified-content-pipeline.md` には `yaml`・`unified`・`rem
 ## 確認事項
 
 着手前に決めたいこと。推奨案は書いたが、決めるのは本人。
-
-
 
 - [ ] **読み込み処理をどこに置くか。** 推奨は「`blog-app/lib/posts.ts`」。理由は、Next.js の `@/` の別名でそのまま import でき、設定を足さずに済むから。ただし `blog-app/` の中にある以上、ほかのフレームワークへ移るときにファイルを動かす手間は残る。リポジトリ直下に `packages/content/` を作って切り離す案もあるが、ワークスペースの設定が要るので今は重い
 - [ ] **`"use cache"` と `readFileSync` のどちらで Cache Components の制約を満たすか。** 推奨は「ページ側に `"use cache"` を書く」。理由は、`lib/posts.ts` に Next.js 固有の書き方を持ち込まずに済むことと、Cache Components を試すというこのリポジトリの目的に合うこと。ただし `"use cache"` の仕組み（キャッシュの寿命など）を理解する負担が増える。`readFileSync` にすれば Next.js の知識なしで通るが、`@mdx-js/mdx` の `evaluate` は非同期のままなので、別の形で同じ問題に当たるかもしれない（未確認）
@@ -171,7 +169,7 @@ date: 2026-09-25
 
 これは **MDX** で書いた最初の記事です。
 
-export const year = 2026
+export const year = 2026;
 
 今年は {year} 年です。
 ```
@@ -402,9 +400,7 @@ type Frontmatter = {
 
 export async function getPostSlugs() {
   const files = await readdir(CONTENT_DIR);
-  return files
-    .filter((file) => file.endsWith(".mdx"))
-    .map((file) => file.replace(/\.mdx$/, ""));
+  return files.filter((file) => file.endsWith(".mdx")).map((file) => file.replace(/\.mdx$/, ""));
 }
 
 export async function getPost(slug: string) {
@@ -530,14 +526,14 @@ git commit -m "feat: MDX の原稿を1本、記事ページとして表示する
 
 上の3行は実際に出たエラー。下の3行は起きると予想されるもので、文面は確かめていない。
 
-| 症状 | 原因と対処 |
-|---|---|
-| `'frontmatter' is of type 'unknown'` | `as Frontmatter` が抜けている（手順 4-b） |
-| `Next.js encountered uncached or runtime data during prerendering` | `page.tsx` の `"use cache";` が抜けている（手順 6） |
-| `bunx tsc --noEmit` で `Cannot find name 'PageProps'` | `PageProps` の型は `bun dev` か `bun run build` を一度動かすと作られる。先にどちらかを実行する |
+| 症状                                                                              | 原因と対処                                                                                                                                          |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'frontmatter' is of type 'unknown'`                                              | `as Frontmatter` が抜けている（手順 4-b）                                                                                                           |
+| `Next.js encountered uncached or runtime data during prerendering`                | `page.tsx` の `"use cache";` が抜けている（手順 6）                                                                                                 |
+| `bunx tsc --noEmit` で `Cannot find name 'PageProps'`                             | `PageProps` の型は `bun dev` か `bun run build` を一度動かすと作られる。先にどちらかを実行する                                                      |
 | `ENOENT: no such file or directory` と `content/hello.mdx` のパスが出る（未確認） | 原稿の場所が違う。`content/` は `blog-app/` の中ではなく、リポジトリ直下に置く。`bun dev` を `blog-app/` 以外の場所で実行した場合も同じことが起きる |
-| `Cannot find module '@mdx-js/mdx'` のようなエラー（未確認） | 手順 2 を `blog-app/` 以外で実行した。`blog-app/` で `bun add` し直す |
-| 見出しが空で、日付だけ出る（未確認） | 原稿の frontmatter に `title:` がない。型チェックでは気づけない（確認事項の3つ目） |
+| `Cannot find module '@mdx-js/mdx'` のようなエラー（未確認）                       | 手順 2 を `blog-app/` 以外で実行した。`blog-app/` で `bun add` し直す                                                                               |
+| 見出しが空で、日付だけ出る（未確認）                                              | 原稿の frontmatter に `title:` がない。型チェックでは気づけない（確認事項の3つ目）                                                                  |
 
 ここに載っていないエラーが出たら、そのまま貼って聞いてほしい。
 
@@ -557,8 +553,6 @@ git commit -m "feat: MDX の原稿を1本、記事ページとして表示する
 着手後に埋める。動いたか（受け入れ条件）とは別に、何が分かったかを残す。
 
 2026-11-03 時点では未記入のまま、本人の了承を得て完了にした。
-
-
 
 - [ ] 原稿が「文字列 → frontmatter と本文 → React コンポーネント」と変わる3段階を、どの関数が担っているかを言える
 - [ ] `vfile-matter` の結果が `unknown` になる理由と、`as` が何を保証しないかを説明できる
