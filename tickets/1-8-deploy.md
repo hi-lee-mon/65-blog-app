@@ -91,14 +91,14 @@
 6. 警告が出ず、`og:image` の住所も正しい理由を確かめる（**この回の本題**）
 7. `65banseki.dev` を Vercel につなぐ
 8. `metadataBase` を足して、手元の警告を消す
-9. ブランチを push して、プレビューの `og:image` を見る
-10. `dev` を経由して `main` に取り込み、本番に出す
+9. `dev` を push して、プレビューの `og:image` を見る
+10. `dev` を `main` に進めて、本番に出す
 11. SNS のカードの見え方を確かめる
 
 ## 確認事項
 
 - [ ] **公開する場所。** 推奨案「Vercel の Hobby プラン」で作成。理由は`cacheComponents` などの新しい機能がそのまま動き、設定がいちばん少ないから。ただし、ドメインは Cloudflare、サイトは Vercel と、管理する画面が2つに分かれる。Hobby は個人の非商用に限られる。Cloudflare Workers に置く案は ADR に書いた
-- [x] **デプロイのやり方とブランチの分け方。** 本人の判断（2026-11-03）で「作業ブランチ → `dev`（プレビュー）→ `main`（本番）」にした。GitHub のデフォルトブランチは `dev`。理由は本番に出す前に `dev` のプレビューでまとめて確かめられるから。Vercel は `main` があれば `main` を本番のブランチに選ぶので、追加の設定は要らない。ただし、取り込みが2段になり、`dev` から `main` へ進める手間が毎回かかる。`dev` を `main` に進め忘れると、本番だけ古いままになる
+- [x] **デプロイのやり方とブランチの分け方。** 本人の判断（2026-11-03）で「`dev` に直接コミットして push（プレビュー）→ `main` に進めて本番」にした。作業ブランチは作らない。GitHub のデフォルトブランチは `dev`。理由は、個人開発で作業ブランチを分ける利点が小さく、本番に出す前に `dev` のプレビューで確かめられるから。Vercel は `main` があれば `main` を本番のブランチに選ぶので、追加の設定は要らない。ただし、取り込みが2段になり、`dev` から `main` へ進める手間が毎回かかる。`dev` を `main` に進め忘れると、本番だけ古いままになる
 - [x] **GitHub のリポジトリの公開範囲。** 推奨案は「private」だったが、本人の判断（2026-11-03）で「public」に変えて作成。理由は学習の過程をコードごと見せられるようにしておきたいから。ただし、全コミットの作者欄の個人のメールアドレスも公開される。隠したくなったら、以後のコミットを GitHub の noreply アドレスで作る。公開済みの履歴は書き換えてもすでに取得された写しからは消えない。
 - [x] **`main` の進め方。** 推奨案「1-7 のブランチを `main` に早送り（`--ff-only`）で取り込む」で作成。理由は1-1 から 1-7 のブランチが一本の線でつながっていて、余計なコミットを作らずに済むから。ただし、プルリクエストを作らないので、GitHub に「何をなぜ入れたか」の記録は残らない（コミットのメッセージには残る）
 - [x] **主にするドメイン。** 推奨案は「`65banseki.dev` を主にする」だったが、本人の判断（2026-11-03）で「`www.65banseki.dev` を主にし、`65banseki.dev` はそこへ 308 で転送する」に変えた。Vercel の既定もこの形。理由は、DNS の標準の決まりだけで動き、Cloudflare の CNAME flattening に頼らずに済むから。DNS の管理元を移しても困らない。ただし、住所が4文字長くなる。また、`65banseki.dev` から `www` へ転送するために、`@` の CNAME（CNAME flattening）は引き続き使う
@@ -394,10 +394,9 @@ curl -sI https://65banseki.dev | head -3
 ```bash
 git switch dev
 git pull
-git switch -c feat/1-8-deploy
 ```
 
-作業ブランチは `dev` から切る。
+作業は `dev` で直接行う。作業ブランチは作らない。
 
 `app/layout.tsx` の `metadata` に1行足す。
 
@@ -438,18 +437,18 @@ git commit -m "feat: metadataBase に www.65banseki.dev を書き、シェア用
 
 ---
 
-### 手順 9：ブランチを push して、プレビューの `og:image` を見る
+### 手順 9：`dev` を push して、プレビューの `og:image` を見る
 
 ```bash
-git push -u origin feat/1-8-deploy
+git push
 ```
 
-Vercel のプロジェクトの画面に、`feat/1-8-deploy` のプレビューのデプロイが現れる。ビルドが終わったら、そのプレビューの住所をブラウザで開く。
+Vercel のプロジェクトの画面に、`dev` のプレビューのデプロイが現れる。ビルドが終わったら、そのプレビューの住所をブラウザで開く。
 
 プレビューは本番ではないので、Vercel のログインを求められる（Standard Protection）。ログインしたら、記事ページ（`/posts/hello`）を開き、ページのソースを表示して `og:image` を探す。
 
 ```
-<meta property="og:image" content="https://65-blog-app-git-feat-1-8-deploy-....vercel.app/posts/hello/opengraph-image?..."/>
+<meta property="og:image" content="https://65-blog-app-git-dev-....vercel.app/posts/hello/opengraph-image?..."/>
 ```
 
 `metadataBase` に `www.65banseki.dev` と書いたのに、プレビューの住所になっている。手順 6 の順番の 1 番目が効いたためだ。プレビューで作った画像の住所を本番に向けてしまうと、まだ本番にない画像を指すことがある。Next.js はそれを避けて、プレビューではプレビュー自身の住所を使う。
@@ -458,17 +457,9 @@ Vercel のプロジェクトの画面に、`feat/1-8-deploy` のプレビュー�
 
 ---
 
-### 手順 10：`dev` を経由して `main` に取り込み、本番に出す
+### 手順 10：`dev` を `main` に進めて、本番に出す
 
-まず `dev` に取り込む。`dev` のプレビューが作られる。
-
-```bash
-git switch dev
-git merge --ff-only feat/1-8-deploy
-git push
-```
-
-`dev` のプレビューで記事ページが開けることをブラウザで確かめたら、`main` に進める。
+手順 9 の `dev` のプレビューで記事ページが開けることを確かめたら、`main` に進める。
 
 ```bash
 git switch main
@@ -512,16 +503,16 @@ curl -sI https://www.65banseki.dev/posts/hello/opengraph-image | head -5
 
 ### うまくいかないとき
 
-| 症状                                                      | 原因と対処                                                                                                 |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `fatal: Not possible to fast-forward, aborting.`          | `main` と作業ブランチの線が枝分かれしている。`git log --oneline --graph main dev` で形を見て、聞いてほしい |
-| `gh repo create` で `Name already exists on this account` | 同じ名前のリポジトリが GitHub にもうある。中身を確かめ、使うなら `git remote add origin` で結びつける      |
-| Vercel のビルドで `tsrs` が見つからない、または動かない   | Linux 向けの tsrs が入っていない。ビルドログの `bun install` の部分を貼って聞いてほしい                    |
-| Vercel のビルドログの bun が 1.3 より古い                 | `minimumReleaseAge` とセキュリティスキャナーが効いていない恐れがある。版を貼って聞いてほしい               |
-| Vercel の Domains で `Invalid Configuration` のまま       | Cloudflare に同じ名前の古いレコードが残っているか、Proxy status がオレンジになっている。7-b を見直す       |
-| `https://www.65banseki.dev` を開くと証明書のエラーになる  | 証明書がまだできていない。Vercel の Domains の画面で状態を見て、待つ                                       |
-| `ERR_TOO_MANY_REDIRECTS`                                  | Cloudflare のプロキシが有効になっている。Proxy status を DNS only にする                                   |
-| プレビューを curl すると HTML が返らない                  | プレビューは Vercel のログインで守られている。ブラウザでログインして見る                                   |
+| 症状                                                      | 原因と対処                                                                                            |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `fatal: Not possible to fast-forward, aborting.`          | `main` と `dev` の線が枝分かれしている。`git log --oneline --graph main dev` で形を見て、聞いてほしい |
+| `gh repo create` で `Name already exists on this account` | 同じ名前のリポジトリが GitHub にもうある。中身を確かめ、使うなら `git remote add origin` で結びつける |
+| Vercel のビルドで `tsrs` が見つからない、または動かない   | Linux 向けの tsrs が入っていない。ビルドログの `bun install` の部分を貼って聞いてほしい               |
+| Vercel のビルドログの bun が 1.3 より古い                 | `minimumReleaseAge` とセキュリティスキャナーが効いていない恐れがある。版を貼って聞いてほしい          |
+| Vercel の Domains で `Invalid Configuration` のまま       | Cloudflare に同じ名前の古いレコードが残っているか、Proxy status がオレンジになっている。7-b を見直す  |
+| `https://www.65banseki.dev` を開くと証明書のエラーになる  | 証明書がまだできていない。Vercel の Domains の画面で状態を見て、待つ                                  |
+| `ERR_TOO_MANY_REDIRECTS`                                  | Cloudflare のプロキシが有効になっている。Proxy status を DNS only にする                              |
+| プレビューを curl すると HTML が返らない                  | プレビューは Vercel のログインで守られている。ブラウザでログインして見る                              |
 
 ここに載っていないエラーが出たら、そのまま貼って聞いてほしい。
 
