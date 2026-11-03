@@ -1,0 +1,12 @@
+{
+  "extends": ["markuplint:recommended-react"],
+  "parser": {
+    "\\.[jt]sx$": "@markuplint/jsx-parser",
+    "\\.mdx$": "@markuplint/mdx-parser"
+  },
+  "specs": {
+    "\\.[jt]sx$": "@markuplint/react-spec",
+    "\\.mdx$": "@markuplint/react-spec"
+  },
+  "excludeFiles": ["./.next/**/*"]
+}

@@ -16,7 +16,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `bun dev`: 開発サーバー
 - `bun run build`: 本番ビルド
-- `bun run lint`: oxlint（設定は `.oxlintrc.json`）
+- `bun run lint`: oxlint（設定は `.oxlintrc.json`）のあと、markuplint（設定は `.markuplintrc.json`）で TSX と MDX のマークアップとアクセシビリティを検査する
+- `bun run typecheck`: `next typegen` でルートの型を作り、tsrs（TypeScript 7 の Rust 移植）で型検査する。`bun run build` も最初にこれを実行する。`next build` 自身の型検査は切ってある。`typescript` パッケージの中身は TypeScript 6 なので、`bunx tsc` は 6 で動く（ADR `20261103-1640-markuplint-with-typescript6.md`）
 - `bun run format`: oxfmt で整形する。`bun run format:check` は確認だけ
 
 テストランナーはまだ入っていない。Vitest（コンポーネント）と Playwright（画面操作）を試す予定。
