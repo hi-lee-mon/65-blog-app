@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "bun run typecheck && next build",
     "start": "next start",
-    "lint": "oxlint && markuplint \"app/**/*.tsx\" \"content/**/*.mdx\"",
+    "lint": "oxlint && bun run lint:markup",
+    "lint:markup": "markuplint \"app/**/*.tsx\" \"content/**/*.mdx\"",
     "typecheck": "next typegen && tsrs --noEmit",
     "format": "oxfmt",
     "format:check": "oxfmt --check"

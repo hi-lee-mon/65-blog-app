@@ -8,5 +8,11 @@
     "\\.[jt]sx$": "@markuplint/react-spec",
     "\\.mdx$": "@markuplint/react-spec"
   },
-  "excludeFiles": ["./.next/**/*"]
+  "excludeFiles": ["./.next/**/*"],
+  "nodeRules": [
+    {
+      "selector": "code[class^='language-']",
+      "rules": { "no-unknown-attr": false }
+    }
+  ]
 }
