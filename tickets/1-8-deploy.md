@@ -25,14 +25,15 @@
 
 ## 作るもの
 
-| 場所                                         | 中身                                                                    |
-| -------------------------------------------- | ----------------------------------------------------------------------- |
-| `main` ブランチ                              | 1-7 までの作業を取り込む（いまは最初のコミット `init` しかない）        |
-| GitHub の `hi-lee-mon/65-blog-app`（public） | 新しく作り、`main` を push する                                         |
-| Vercel のプロジェクト                        | GitHub のリポジトリを取り込んで作る。`main` に push すると本番に出る    |
-| Cloudflare の DNS                            | `65banseki.dev` と `www.65banseki.dev` を Vercel に向けるレコードを足す |
-| `app/layout.tsx`                             | `metadata` に `metadataBase: new URL("https://65banseki.dev")` を足す   |
-| `docs/adr/20261103-2241-host-on-vercel.md`   | ホスティング先を決めた記録（作成済み。この回のコミットに含める）        |
+| 場所                                         | 中身                                                                                             |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `main` ブランチ                              | 本番用。1-7 までの作業を取り込む（済み）                                                         |
+| `dev` ブランチ                               | 作業をまとめるブランチ。`main` から作り、GitHub のデフォルトブランチにする（済み）               |
+| GitHub の `hi-lee-mon/65-blog-app`（public） | 新しく作り、`main` を push する                                                                  |
+| Vercel のプロジェクト                        | GitHub のリポジトリを取り込んで作る。`main` に push すると本番、ほかのブランチはプレビューに出る |
+| Cloudflare の DNS                            | `65banseki.dev` と `www.65banseki.dev` を Vercel に向けるレコードを足す                          |
+| `app/layout.tsx`                             | `metadata` に `metadataBase: new URL("https://www.65banseki.dev")` を足す                        |
+| `docs/adr/20261103-2241-host-on-vercel.md`   | ホスティング先を決めた記録（作成済み。この回のコミットに含める）                                 |
 
 今回は扱わないもの: サイト全体の `title`・`description`（「Create Next App」のまま公開される）、Cloudflare Web Analytics、プロキシ（Cloudflare のオレンジの雲）を使った配信。
 
@@ -40,7 +41,7 @@
 
 1-7 のビルドで出続けている警告は、「`og:image` の URL の頭に付けるサイトの住所が分からないので、仮に `http://localhost:3000` を使う」という意味だった。住所を書けば警告は消える。ただ、その住所でサイトが実際に開けなければ、SNS は画像を取りに来られない。だから住所を書くことと、その住所でサイトを公開することを1回でやる。
 
-もう1つの狙いは、Next.js が `metadataBase` のない状態をどう扱っているかを知ることにある。Vercel の上では、警告が出ているのに `og:image` の住所が正しくなる。なぜそうなるのかを Next.js のコードで確かめると、「書かなくても動く設定を、なぜ書くのか」に自分で答えられるようになる。
+もう1つの狙いは、Next.js が `metadataBase` のない状態をどう扱っているかを知ることにある。Vercel の上では、`metadataBase` を書いていないのに警告が出ず、`og:image` の住所も正しくなる。なぜそうなるのかを Next.js のコードで確かめると、「書かなくても動く設定を、なぜ書くのか」に自分で答えられるようになる。
 
 ## 周辺知識
 
@@ -57,7 +58,7 @@
 - `bun.lock` があると bun でインストールする。ただし、Vercel が使う bun の版はドキュメントに書かれていない（[Package Managers](https://vercel.com/docs/package-managers)）
 - Hobby プランは個人の非商用に限られる
 - 既定の保護（Standard Protection）では、本番のドメイン以外の URL（プレビューなど）を開くのに Vercel へのログインが要る（[Deployment Protection](https://vercel.com/docs/deployment-protection)）
-- ドメインのいちばん短い形（`65banseki.dev`）は A レコード、`www` のような頭の付いた形は CNAME レコードでつなぐ。値は Vercel の画面に出る（[Adding & Configuring a Custom Domain](https://vercel.com/docs/domains/working-with-domains/add-a-domain)）
+- 何も付かない形（`65banseki.dev`）は本来 A レコード、`www` のような頭の付いた形は CNAME レコードでつなぐ。ただし DNS の管理元が Cloudflare だと、何も付かない形にも CNAME を勧められる（2026-11-03 に Vercel の画面で確認）。値は Vercel の画面に出る（[Adding & Configuring a Custom Domain](https://vercel.com/docs/domains/working-with-domains/add-a-domain)）
 - Cloudflare は DNS としてだけ使い、プロキシは切る形を勧めている（[Using Cloudflare and other reverse proxies with Vercel](https://vercel.com/kb/guide/can-i-use-a-proxy-on-top-of-my-vercel-deployment)）
 
 ### Vercel が入れる環境変数（出典: [System environment variables](https://vercel.com/docs/environment-variables/system-environment-variables)）
@@ -86,23 +87,23 @@
 2. `main` を 1-7 まで進める
 3. GitHub に public のリポジトリを作り、`main` を push する
 4. Vercel にリポジトリを取り込み、最初のデプロイをする
-5. ビルドログで bun の版と警告を確かめる
-6. 警告が出ているのに `og:image` の住所が正しい理由を確かめる（**この回の本題**）
+5. ビルドログで bun の版を確かめ、警告が出ていないのを見る
+6. 警告が出ず、`og:image` の住所も正しい理由を確かめる（**この回の本題**）
 7. `65banseki.dev` を Vercel につなぐ
 8. `metadataBase` を足して、手元の警告を消す
 9. ブランチを push して、プレビューの `og:image` を見る
-10. `main` に取り込んで、本番に出す
+10. `dev` を経由して `main` に取り込み、本番に出す
 11. SNS のカードの見え方を確かめる
 
 ## 確認事項
 
 - [ ] **公開する場所。** 推奨案「Vercel の Hobby プラン」で作成。理由は`cacheComponents` などの新しい機能がそのまま動き、設定がいちばん少ないから。ただし、ドメインは Cloudflare、サイトは Vercel と、管理する画面が2つに分かれる。Hobby は個人の非商用に限られる。Cloudflare Workers に置く案は ADR に書いた
-- [ ] **デプロイのやり方。** 推奨案「GitHub と連携し、`main` への push で本番に出す」で作成。理由はpush するだけで出せて、ブランチごとのプレビューも自動で作られるから。ただし、`main` に入れたものはすぐ公開される。書きかけの記事を `main` に入れないよう気をつける
-- [x] **GitHub のリポジトリの公開範囲。** 推奨案は「private」だったが、本人の判断（2026-11-03）で「public」に変えて作成。理由は、学習の過程をコードごと見せられるようにしておきたいから。ただし、全コミットの作者欄の個人のメールアドレスも公開される。隠したくなったら、以後のコミットを GitHub の noreply アドレスで作る。公開済みの履歴は、書き換えてもすでに取得された写しからは消えない。
+- [x] **デプロイのやり方とブランチの分け方。** 本人の判断（2026-11-03）で「作業ブランチ → `dev`（プレビュー）→ `main`（本番）」にした。GitHub のデフォルトブランチは `dev`。理由は本番に出す前に `dev` のプレビューでまとめて確かめられるから。Vercel は `main` があれば `main` を本番のブランチに選ぶので、追加の設定は要らない。ただし、取り込みが2段になり、`dev` から `main` へ進める手間が毎回かかる。`dev` を `main` に進め忘れると、本番だけ古いままになる
+- [x] **GitHub のリポジトリの公開範囲。** 推奨案は「private」だったが、本人の判断（2026-11-03）で「public」に変えて作成。理由は学習の過程をコードごと見せられるようにしておきたいから。ただし、全コミットの作者欄の個人のメールアドレスも公開される。隠したくなったら、以後のコミットを GitHub の noreply アドレスで作る。公開済みの履歴は書き換えてもすでに取得された写しからは消えない。
 - [x] **`main` の進め方。** 推奨案「1-7 のブランチを `main` に早送り（`--ff-only`）で取り込む」で作成。理由は1-1 から 1-7 のブランチが一本の線でつながっていて、余計なコミットを作らずに済むから。ただし、プルリクエストを作らないので、GitHub に「何をなぜ入れたか」の記録は残らない（コミットのメッセージには残る）
-- [ ] **主にするドメイン。** 推奨案「`65banseki.dev` を主にし、`www.65banseki.dev` はそこへ転送する」で作成。理由は短く、`metadataBase` に書く住所と同じになるから。ただし、Vercel のドキュメントは `www` を主にする形を勧めている。DNS の仕組み上、頭に何も付かない形はサービスを移すときに融通が利きにくい
+- [x] **主にするドメイン。** 推奨案は「`65banseki.dev` を主にする」だったが、本人の判断（2026-11-03）で「`www.65banseki.dev` を主にし、`65banseki.dev` はそこへ 308 で転送する」に変えた。Vercel の既定もこの形。理由は、DNS の標準の決まりだけで動き、Cloudflare の CNAME flattening に頼らずに済むから。DNS の管理元を移しても困らない。ただし、住所が4文字長くなる。また、`65banseki.dev` から `www` へ転送するために、`@` の CNAME（CNAME flattening）は引き続き使う
 - [ ] **Cloudflare のプロキシ。** 推奨案「使わない（DNS only）」で作成。理由はVercel がそう勧めていて、間に挟まる仕組みが1つ減るから。ただし、Cloudflare のキャッシュや防御の機能は使えない
-- [ ] **`metadataBase` の書き方。** 推奨案「`app/layout.tsx` に `https://65banseki.dev` を直接書く」で作成。理由はVercel の上では無くても動くが、手元のビルドの警告が消え、置き場所を移しても住所が変わらないから。ただし、ドメインを変えたらここも直す必要がある。環境変数で渡す案もあるが、住所が1つしかないうちは直接書くほうが読みやすい
+- [ ] **`metadataBase` の書き方。** 推奨案「`app/layout.tsx` に `https://www.65banseki.dev` を直接書く」で作成。理由はVercel の上では無くても動くが、手元のビルドの警告が消え、置き場所を移しても住所が変わらないから。ただし、ドメインを変えたらここも直す必要がある。環境変数で渡す案もあるが、住所が1つしかないうちは直接書くほうが読みやすい
 - [ ] **【標準ルールからの逸脱】TDD を適用しない。** 本人の判断（2026-11-03）による。この回はサービスの設定が中心で、テストを書く対象がほとんどない
 
 ## ハンズオン
@@ -157,7 +158,7 @@ Vercel（ビルドして公開する）  ←──┐
 
 ### 手順 1：push の前に、これまでの履歴に秘密の値がないかを調べる
 
-手順 1〜3 は、本人の依頼で 2026-11-03 に Claude が実行した。コマンドは読んで意味を確かめ、手順 3 の最後の確認だけ自分の目で行う。
+手順 1〜3 は 2026-11-03 に済ませた。手順 1 の検査は Claude が、手順 2・3 の push と `main` への取り込みは本人が行った。そのあと本人の判断で、`main` から `dev` を作って GitHub のデフォルトブランチにし、`feat/1-7-og-image` を消した。
 
 ```bash
 cd ~/ghq/github.com/hi-lee-mon/65-blog-app
@@ -226,8 +227,11 @@ origin  git@github.com:hi-lee-mon/65-blog-app.git (push)
 3. GitHub のどのリポジトリを Vercel に見せるかを聞かれたら、`65-blog-app` だけを選ぶ
 4. 取り込み画面で、フレームワークが Next.js と判定されていることを確かめる。ビルドとインストールのコマンドは変えない
 5. デプロイを始める
+6. デプロイが終わったら、プロジェクトの Settings → Environments → Production を開き、Branch Tracking が `main` になっていることを確かめる
 
 数分でビルドが終わり、`https://<プロジェクト名>.vercel.app` のような住所が出る。開いてトップページが表示されれば成功。
+
+**なぜ本番が `dev` ではなく `main` になるのか** — Vercel は本番のブランチを、`main` → `master` → GitHub のデフォルトブランチの順で選ぶ（[Deploying Git Repositories with Vercel](https://vercel.com/docs/git)）。デフォルトブランチを `dev` にしても、`main` があるので本番は `main` になる。
 
 **なぜ GitHub に見せるリポジトリを1つに絞るのか** — Vercel は GitHub の「アプリ」として、選んだリポジトリを読む権限を持つ。全部を選ぶと、ほかの private なリポジトリまで読める状態になる。使うものだけに絞っておく。
 
@@ -235,17 +239,19 @@ origin  git@github.com:hi-lee-mon/65-blog-app.git (push)
 
 ---
 
-### 手順 5：ビルドログで bun の版と警告を確かめる
+### 手順 5：ビルドログで bun の版を確かめ、警告が出ていないのを見る
 
 Vercel のプロジェクトの画面で、いまのデプロイを開き、ビルドログ（Build Logs）を表示する。次の3点を探す。
 
 1. `bun install` の行と、bun の版（`bun install v1.x.x` のような行）
 2. `bun run build` が動き、`next typegen && tsrs --noEmit` が通っていること
-3. 手元と同じ警告が出ていること
+3. 手元のビルドでは出ていた次の警告が、**出ていない**こと
 
 ```
 ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000".
 ```
+
+`metadataBase` はまだ書いていない。それでも Vercel では警告が出ない。理由は手順 6 で確かめる。
 
 bun の版は、このチケットの受け入れ条件に書き写す欄がある。
 
@@ -253,7 +259,7 @@ bun の版は、このチケットの受け入れ条件に書き写す欄があ�
 
 ---
 
-### 手順 6：警告が出ているのに `og:image` の住所が正しい理由を確かめる（この回の本題）
+### 手順 6：警告が出ず、`og:image` の住所も正しい理由を確かめる（この回の本題）
 
 `<プロジェクト名>` を手順 4 の住所に置き換えて、記事ページの `og:image` を取り出す。
 
@@ -267,7 +273,7 @@ curl -s https://<プロジェクト名>.vercel.app/posts/hello | grep -o '<meta 
 <meta property="og:image" content="https://<プロジェクト名>.vercel.app/posts/hello/opengraph-image?..."/>
 ```
 
-ビルドログには「`localhost:3000` を使う」と警告が出ていた。それなのに住所は正しい。Next.js の中を見る。
+`metadataBase` を書いていないのに、警告も出ず、住所も正しい。Next.js の中を見る。
 
 ```bash
 grep -n "VERCEL" node_modules/next/dist/lib/metadata/resolvers/resolve-url.js
@@ -304,18 +310,31 @@ function getSocialImageMetadataBaseFallback(metadataBase) {
 3. `metadataBase` がなければ、Vercel が入れた本番の住所（`VERCEL_PROJECT_PRODUCTION_URL`）を使う
 4. それもなければ、`http://localhost:3000` を使う
 
-手元には Vercel の環境変数がないので 4 に落ち、Vercel の上では 3 で拾われていた。警告は「`metadataBase` を書いていない」ことを知らせるだけで、3 で拾われるかどうかまでは見ていない。
+手元には Vercel の環境変数がないので 4 に落ち、Vercel の上では 3 で拾われていた。
 
-手元で Vercel の環境変数を真似てビルドすると、この順番どおりに住所が変わる（実測）。
+警告を出すかどうかは、別のファイルで決めている。
 
-| ビルドした場所（真似た環境変数）                          | `metadataBase` | `og:image` の頭                               |
-| --------------------------------------------------------- | -------------- | --------------------------------------------- |
-| 手元（なし）                                              | なし           | `http://localhost:3000`                       |
-| 本番（`VERCEL_PROJECT_PRODUCTION_URL`）                   | なし           | `https://65-blog-app.vercel.app`              |
-| 手元（なし）                                              | あり           | `https://65banseki.dev`                       |
-| プレビュー（`VERCEL_ENV=preview` と `VERCEL_BRANCH_URL`） | あり           | `https://65-blog-app-git-feat-1-8.vercel.app` |
+```bash
+grep -n "isUsingVercelSystemEnvironmentVariables =\|const shouldWarn" node_modules/next/dist/lib/metadata/resolvers/resolve-opengraph.js
+```
 
-**では、なぜ `metadataBase` を書くのか** — Vercel の上だけなら、書かなくても正しく動く。それでも書くのは、3 が Vercel の環境変数に頼った仕組みだからだ。手元のビルドや、Vercel 以外の場所では 4 に落ちる。このリポジトリは、原稿の読み込み処理を Next.js に依存させないなど、置き場所や道具を移せる形を選んできた。住所も同じで、Vercel が教えてくれなくても決まるように書いておく。
+```
+76:    const isUsingVercelSystemEnvironmentVariables = Boolean(process.env.VERCEL);
+95:        const shouldWarn = !isUsingVercelSystemEnvironmentVariables && !metadataBase && (process.env.NODE_ENV === 'production' || !isStaticMetadataRouteFile);
+```
+
+Vercel のビルド機には `VERCEL=1` という環境変数が入っている。Next.js はこれを見て「Vercel が住所を補ってくれる」と判断し、警告を出さない。警告は、住所が `localhost` に落ちそうな場所（手元や、Vercel 以外のサーバー）に向けたものだった。
+
+手元で Vercel の環境変数を真似てビルドすると、この順番どおりに住所が変わる（実測。ただし `VERCEL=1` は入れていないので、警告は出た）。
+
+| ビルドした場所（真似た環境変数）                          | `metadataBase`                         | `og:image` の頭                               |
+| --------------------------------------------------------- | -------------------------------------- | --------------------------------------------- |
+| 手元（なし）                                              | なし                                   | `http://localhost:3000`                       |
+| 本番（`VERCEL_PROJECT_PRODUCTION_URL`）                   | なし                                   | `https://65-blog-app.vercel.app`              |
+| 手元（なし）                                              | あり（`https://65banseki.dev` で実測） | `https://65banseki.dev`                       |
+| プレビュー（`VERCEL_ENV=preview` と `VERCEL_BRANCH_URL`） | あり                                   | `https://65-blog-app-git-feat-1-8.vercel.app` |
+
+**では、なぜ `metadataBase` を書くのか** — Vercel の上だけなら、書かなくても正しく動く。それでも書くのは、3 が Vercel の環境変数に頼った仕組みだからだ。手元のビルドや、Vercel 以外の場所では 4 に落ちる。このリポジトリは原稿の読み込み処理を Next.js に依存させないなど、置き場所や道具を移せる形を選んできた。住所も同じで、Vercel が教えてくれなくても決まるように書いておく。
 
 **この発見が今後どこに効くか** — フレームワークやホスティングには、「書かなくても、その場所でだけ動く」既定値がたくさんある。今回のように、警告や手元との違いに気づいたら、どの順番で値が決まっているかを中まで見にいく。これは sitemap や RSS で記事の絶対 URL を作るときにも、そのまま同じ問題として出てくる。
 
@@ -327,23 +346,25 @@ function getSocialImageMetadataBaseFallback(metadataBase) {
 
 1. Vercel のプロジェクトの Settings → Domains を開く
 2. `65banseki.dev` を追加する
-3. `www.65banseki.dev` も足すかを聞かれたら足し、`www.65banseki.dev` から `65banseki.dev` へ転送する形を選ぶ
-4. 画面に、Cloudflare に書くべきレコードが出る。A レコードの値（数字の並び）と、CNAME レコードの値（`〜.vercel-dns〜.com` のような名前）を控える
+3. `www.65banseki.dev` も自動で足される。既定の「`65banseki.dev` を `www.65banseki.dev` へ 308 で転送する」形のままにする
+4. 画面に、Cloudflare に書くべきレコードが出る。`@` と `www` の2行で、どちらも CNAME、値は `〜.vercel-dns-〜.com.` のような名前になる。値を控える
 
 #### 7-b：Cloudflare の DNS にレコードを書く
 
 Cloudflare のダッシュボードで `65banseki.dev` を選び、DNS の Records の画面を開く。次の2行を足す。
 
-| Type  | Name  | 値                              | Proxy status |
-| ----- | ----- | ------------------------------- | ------------ |
-| A     | `@`   | 7-a で控えた A レコードの値     | DNS only     |
-| CNAME | `www` | 7-a で控えた CNAME レコードの値 | DNS only     |
+| Type  | Name  | 値                      | Proxy status |
+| ----- | ----- | ----------------------- | ------------ |
+| CNAME | `@`   | 7-a で控えた `@` の値   | DNS only     |
+| CNAME | `www` | 7-a で控えた `www` の値 | DNS only     |
 
 Proxy status は雲のアイコンを押して灰色（DNS only）にする。オレンジのままにしない。
 
 同じ名前（`@` や `www`）の A・AAAA・CNAME レコードがすでにあれば、Vercel の画面に「設定が正しくない」と出る原因になる。そのときは、古いほうを消す。
 
 **`@` は何か** — ドメインそのもの（`65banseki.dev`）を指す書き方だ。`www` と書けば `www.65banseki.dev` を指す。
+
+**308 は何か** — 「このページは恒久的に別の住所へ移った」とブラウザに伝える番号（HTTP のステータスコード）だ。同じ意味の 301 より新しく、フォームの送信などの送り方を変えずに転送する。`65banseki.dev` を開いた人は、308 で `www.65banseki.dev` へ送られる。
 
 **なぜ DNS only にするのか** — オレンジの雲にすると、ブラウザと Vercel の間に Cloudflare の中継が挟まる。中継が増えると、Cloudflare 側に古いページが残る、Vercel のボット対策が効かなくなる、といった問題を考えることになる。Vercel もこの形を勧めている。
 
@@ -354,9 +375,15 @@ dig +short 65banseki.dev
 dig +short www.65banseki.dev
 ```
 
-1行目は 7-a で控えた A レコードの値、2行目は CNAME の値（とその先の番号）が出ればよい。何も出ないときは、数分から数十分待ってやり直す。電話帳の写しは世界中に配られていて、全部が新しくなるまで時間がかかる。
+1行目は番号（IP アドレス）だけが出る。Cloudflare が CNAME を番号に引き直して返すため（CNAME flattening）だ。2行目は 7-a で控えた名前と、その先の番号が出る。何も出ないときは、数分から数十分待ってやり直す。電話帳の写しは世界中に配られていて、全部が新しくなるまで時間がかかる。
 
-Vercel の Domains の画面で、`65banseki.dev` が有効（Valid Configuration）になり、証明書が発行されるのを待つ。そのあと `https://65banseki.dev` を開き、手順 4 と同じトップページが出れば成功。
+Vercel の Domains の画面で、`65banseki.dev` と `www.65banseki.dev` が有効（Valid Configuration）になり、証明書が発行されるのを待つ。そのあと `https://www.65banseki.dev` を開き、手順 4 と同じトップページが出れば成功。転送も確かめる。
+
+```bash
+curl -sI https://65banseki.dev | head -3
+```
+
+1行目が `HTTP/2 308`、`location: https://www.65banseki.dev/` の行があればよい。
 
 **`.dev` のドメインで知っておくこと** — `.dev` は、ブラウザが最初から「必ず https で開く」と決めているドメインだ。証明書ができる前に開くと、ページではなくブラウザのエラーが出る。証明書は Vercel が自動で作るので、待てば開ける。
 
@@ -365,14 +392,18 @@ Vercel の Domains の画面で、`65banseki.dev` が有効（Valid Configuratio
 ### 手順 8：`metadataBase` を足して、手元の警告を消す
 
 ```bash
+git switch dev
+git pull
 git switch -c feat/1-8-deploy
 ```
+
+作業ブランチは `dev` から切る。
 
 `app/layout.tsx` の `metadata` に1行足す。
 
 ```tsx
 export const metadata: Metadata = {
-  metadataBase: new URL("https://65banseki.dev"),
+  metadataBase: new URL("https://www.65banseki.dev"),
   title: "Create Next App",
   description: "Generated by create next app",
 };
@@ -387,7 +418,7 @@ grep -o '<meta property="og:image" [^>]*>' .next/server/app/posts/hello.html
 
 ```
 0
-<meta property="og:image" content="https://65banseki.dev/posts/hello/opengraph-image?0203e9bf893d0cb0"/>
+<meta property="og:image" content="https://www.65banseki.dev/posts/hello/opengraph-image?0203e9bf893d0cb0"/>
 ```
 
 1行目の `0` は、ビルドの出力に `metadataBase` という文字が1度も出なかった、つまり警告が消えたという意味だ。
@@ -402,7 +433,7 @@ grep -o '<meta property="og:image" [^>]*>' .next/server/app/posts/hello.html
 bun run typecheck
 bun run lint
 git add app/layout.tsx docs/adr/20261103-2241-host-on-vercel.md tickets/1-8-deploy.md
-git commit -m "feat: metadataBase に 65banseki.dev を書き、シェア用の画像の住所を決める"
+git commit -m "feat: metadataBase に www.65banseki.dev を書き、シェア用の画像の住所を決める"
 ```
 
 ---
@@ -421,45 +452,53 @@ Vercel のプロジェクトの画面に、`feat/1-8-deploy` のプレビュー�
 <meta property="og:image" content="https://65-blog-app-git-feat-1-8-deploy-....vercel.app/posts/hello/opengraph-image?..."/>
 ```
 
-`metadataBase` に `65banseki.dev` と書いたのに、プレビューの住所になっている。手順 6 の順番の 1 番目が効いたためだ。プレビューで作った画像の住所を本番に向けてしまうと、まだ本番にない画像を指すことがある。Next.js はそれを避けて、プレビューではプレビュー自身の住所を使う。
+`metadataBase` に `www.65banseki.dev` と書いたのに、プレビューの住所になっている。手順 6 の順番の 1 番目が効いたためだ。プレビューで作った画像の住所を本番に向けてしまうと、まだ本番にない画像を指すことがある。Next.js はそれを避けて、プレビューではプレビュー自身の住所を使う。
 
 **なぜ curl ではなくブラウザなのか** — プレビューは Vercel のログインで守られているので、ログインしていない curl ではログイン画面が返ってくる。
 
 ---
 
-### 手順 10：`main` に取り込んで、本番に出す
+### 手順 10：`dev` を経由して `main` に取り込み、本番に出す
+
+まず `dev` に取り込む。`dev` のプレビューが作られる。
+
+```bash
+git switch dev
+git merge --ff-only feat/1-8-deploy
+git push
+```
+
+`dev` のプレビューで記事ページが開けることをブラウザで確かめたら、`main` に進める。
 
 ```bash
 git switch main
-git merge --ff-only feat/1-8-deploy
+git merge --ff-only dev
 git push
 ```
 
 Vercel で本番のデプロイが終わるのを待ってから、本番の `og:image` を見る。
 
 ```bash
-curl -s https://65banseki.dev/posts/hello | grep -o '<meta property="og:image" [^>]*>'
+curl -s https://www.65banseki.dev/posts/hello | grep -o '<meta property="og:image" [^>]*>'
 ```
 
 ```
-<meta property="og:image" content="https://65banseki.dev/posts/hello/opengraph-image?..."/>
+<meta property="og:image" content="https://www.65banseki.dev/posts/hello/opengraph-image?..."/>
 ```
 
 画像そのものも開く。
 
 ```bash
-curl -sI https://65banseki.dev/posts/hello/opengraph-image | head -5
+curl -sI https://www.65banseki.dev/posts/hello/opengraph-image | head -5
 ```
 
 1行目が `HTTP/2 200`、どこかに `content-type: image/png` があればよい。ブラウザで同じ URL を開くと、1-7 で作った画像が出る。
-
-ビルドログに `metadataBase` の警告が出ていないことも確かめる。
 
 ---
 
 ### 手順 11：SNS のカードの見え方を確かめる
 
-`https://65banseki.dev/posts/hello` を、次のどれかに貼る。
+`https://www.65banseki.dev/posts/hello` を、次のどれかに貼る。
 
 - 自分しかいない Slack や Discord のチャンネル
 - X の投稿画面（投稿はしなくてよい。カードの下書きが出る）
@@ -473,16 +512,16 @@ curl -sI https://65banseki.dev/posts/hello/opengraph-image | head -5
 
 ### うまくいかないとき
 
-| 症状                                                      | 原因と対処                                                                                                               |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `fatal: Not possible to fast-forward, aborting.`          | `main` と作業ブランチの線が枝分かれしている。`git log --oneline --graph main feat/1-7-og-image` で形を見て、聞いてほしい |
-| `gh repo create` で `Name already exists on this account` | 同じ名前のリポジトリが GitHub にもうある。中身を確かめ、使うなら `git remote add origin` で結びつける                    |
-| Vercel のビルドで `tsrs` が見つからない、または動かない   | Linux 向けの tsrs が入っていない。ビルドログの `bun install` の部分を貼って聞いてほしい                                  |
-| Vercel のビルドログの bun が 1.3 より古い                 | `minimumReleaseAge` とセキュリティスキャナーが効いていない恐れがある。版を貼って聞いてほしい                             |
-| Vercel の Domains で `Invalid Configuration` のまま       | Cloudflare に同じ名前の古いレコードが残っているか、Proxy status がオレンジになっている。7-b を見直す                     |
-| `https://65banseki.dev` を開くと証明書のエラーになる      | 証明書がまだできていない。Vercel の Domains の画面で状態を見て、待つ                                                     |
-| `ERR_TOO_MANY_REDIRECTS`                                  | Cloudflare のプロキシが有効になっている。Proxy status を DNS only にする                                                 |
-| プレビューを curl すると HTML が返らない                  | プレビューは Vercel のログインで守られている。ブラウザでログインして見る                                                 |
+| 症状                                                      | 原因と対処                                                                                                 |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `fatal: Not possible to fast-forward, aborting.`          | `main` と作業ブランチの線が枝分かれしている。`git log --oneline --graph main dev` で形を見て、聞いてほしい |
+| `gh repo create` で `Name already exists on this account` | 同じ名前のリポジトリが GitHub にもうある。中身を確かめ、使うなら `git remote add origin` で結びつける      |
+| Vercel のビルドで `tsrs` が見つからない、または動かない   | Linux 向けの tsrs が入っていない。ビルドログの `bun install` の部分を貼って聞いてほしい                    |
+| Vercel のビルドログの bun が 1.3 より古い                 | `minimumReleaseAge` とセキュリティスキャナーが効いていない恐れがある。版を貼って聞いてほしい               |
+| Vercel の Domains で `Invalid Configuration` のまま       | Cloudflare に同じ名前の古いレコードが残っているか、Proxy status がオレンジになっている。7-b を見直す       |
+| `https://www.65banseki.dev` を開くと証明書のエラーになる  | 証明書がまだできていない。Vercel の Domains の画面で状態を見て、待つ                                       |
+| `ERR_TOO_MANY_REDIRECTS`                                  | Cloudflare のプロキシが有効になっている。Proxy status を DNS only にする                                   |
+| プレビューを curl すると HTML が返らない                  | プレビューは Vercel のログインで守られている。ブラウザでログインして見る                                   |
 
 ここに載っていないエラーが出たら、そのまま貼って聞いてほしい。
 
@@ -491,13 +530,15 @@ curl -sI https://65banseki.dev/posts/hello/opengraph-image | head -5
 ## 受け入れ条件
 
 - [ ] GitHub に `hi-lee-mon/65-blog-app` が public で作られ、`main` が `c8a873d` より先まで push されている（`git log origin/main --oneline -1` で見る）
-- [ ] Vercel のビルドログで見た bun の版を、ここに書いた: `_____`
+- [ ] Vercel の Settings → Environments → Production の Branch Tracking が `main` になっている
+- [ ] Vercel のビルドログで見た bun の版を、ここに書いた: `1.4.4`（2026-11-03 の最初のデプロイ）
 - [ ] 手順 6 で、`metadataBase` がないのに `og:image` が `https://<プロジェクト名>.vercel.app/...` になっていることを自分で確かめた
-- [ ] `dig +short 65banseki.dev` が Vercel の画面に出た A レコードの値を返す
+- [ ] `dig +short www.65banseki.dev` が、Vercel の画面に出た `www` の値と番号を返す
+- [ ] `curl -sI https://65banseki.dev` が `308` と `location: https://www.65banseki.dev/` を返す
 - [ ] Cloudflare の DNS の2行が、どちらも DNS only（灰色の雲）になっている
 - [ ] 手元の `bun run build` で `metadataBase` の警告が出ない
 - [ ] 手順 9 で、プレビューの `og:image` がプレビューの住所になっていることを自分で確かめた
-- [ ] `curl -s https://65banseki.dev/posts/hello` の `og:image` が `https://65banseki.dev/posts/hello/opengraph-image?...` になっている
+- [ ] `curl -s https://www.65banseki.dev/posts/hello` の `og:image` が `https://www.65banseki.dev/posts/hello/opengraph-image?...` になっている
 - [ ] SNS か確認サービスで、記事のタイトルと画像が載ったカードを自分の目で見た
 - [ ] `bun run typecheck` と `bun run lint` がエラーなしで終わる
 
