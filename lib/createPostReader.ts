@@ -1,4 +1,5 @@
 import { evaluate } from "@mdx-js/mdx";
+import rehypeShiki from "@shikijs/rehype";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import * as runtime from "react/jsx-runtime";
@@ -28,7 +29,20 @@ export function createPostReader(contentDir: string) {
     if (!SLUG_PATTERN.test(slug)) return null;
     try {
       const { file, frontmatter } = await readPostFile(slug);
-      const { default: Content } = await evaluate(file, runtime);
+
+      const { default: Content } = await evaluate(file, {
+        ...runtime,
+        rehypePlugins: [
+          [
+            rehypeShiki,
+            {
+              themes: { light: "github-light", dark: "github-dark" },
+              defaultColor: "light-dark()",
+            },
+          ],
+        ],
+      });
+
       return { frontmatter, Content };
     } catch {
       return null;
