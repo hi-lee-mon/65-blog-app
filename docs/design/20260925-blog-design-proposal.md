@@ -161,10 +161,14 @@ Next.js の同梱ガイド（`internationalization.md`）の形に沿うと、�
 
 正式な数字は Cloudflare Web Analytics で取る（1-10）。そのうえで、Umami v3 の機能（独自のイベント、利用者のグループ分け、リンクの計測など）を試すために、次の2段階で Umami を足す。
 
-- 1-11: Umami Cloud の無料プラン（月10万イベント、サイト1つ、保存6か月）を足す。両方を入れると数字はそろわないので、比べるときは傾向だけを見る
+- 1-12: Umami Cloud の無料プラン（月10万イベント、サイト1つ、保存6か月）を足す。両方を入れると数字はそろわないので、比べるときは傾向だけを見る
 - その後: Umami をセルフホストする。Cloudflare は PostgreSQL を提供しないので、Cloudflare Containers（Workers Paid、月5ドル）で Umami を動かし、データベースは Neon などよそのサービスを使う構成になる。時期は未定
 
 どちらも、決めるときに ADR を書く。
+
+### `canonical` の書き忘れを、自作の lint ルールで見つける
+
+1-11 で、`canonical` と `og:url` をページごとに書く形にした。ページを足したときに書き忘れても、エラーは出ない。そこで、oxlint の JS プラグイン（`jsPlugins`）で「`page.tsx` が `alternates.canonical` を書いていない」ことを見つけるルールを自作する。`export const metadata` と `generateMetadata` の両方の書き方に対応する必要がある。番号は、着手するときに決める。
 
 ## 対象外にしたこと
 
