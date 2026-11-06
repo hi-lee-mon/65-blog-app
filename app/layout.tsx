@@ -47,6 +47,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             })}
           />
         )}
+        {process.env.UMAMI_WEBSITE_ID && (
+          <Script
+            src="https://cloud.umami.is/script.js"
+            data-website-id={process.env.UMAMI_WEBSITE_ID}
+            data-domains="www.65banseki.dev" // このホスト名のときだけ動く
+          />
+        )}
       </body>
     </html>
   );

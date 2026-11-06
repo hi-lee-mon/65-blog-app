@@ -1,8 +1,8 @@
 import path from "node:path";
-import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
 import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../lib/siteMetadata";
+import { TagLink } from "./_components/tag-link";
 
 const { getAllTags } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -35,7 +35,7 @@ export default async function Page() {
       <ul>
         {tags.map((tag) => (
           <li key={tag}>
-            <Link href={`/tags/${tag}`}>{tag}</Link>
+            <TagLink tag={tag} />
           </li>
         ))}
       </ul>
