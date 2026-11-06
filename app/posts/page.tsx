@@ -1,13 +1,28 @@
 import path from "node:path";
 import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
-import { Metadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
+import { siteOpenGraph } from "../../lib/siteMetadata";
 
 const { getAllPosts } = createPostReader(path.join(process.cwd(), "content"));
 
-export const metadata: Metadata = {
-  title: "記事一覧",
-};
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // openGraphを上書きすると親で指定したopengraph-imageを上書きしてしまうため、parentで参照
+  const { openGraph } = await parent;
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      ...siteOpenGraph,
+      type: "website",
+      url: "/posts",
+      images: openGraph?.images,
+    },
+  };
+}
 
 export default async function Page() {
   "use cache";

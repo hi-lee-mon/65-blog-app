@@ -21,10 +21,12 @@ export async function generateMetadata({ params }: PageProps<"/posts/[slug]">): 
 
   return {
     title: post.frontmatter.title,
+    alternates: { canonical: `/posts/${slug}` },
     openGraph: {
       ...siteOpenGraph,
       type: "article",
       publishedTime: post.frontmatter.date,
+      url: `/posts/${slug}`,
     },
   };
 }

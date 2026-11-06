@@ -13,6 +13,17 @@ const nextConfig: NextConfig = {
     turbopackRustReactCompiler: true, // https://nextjs.org/blog/next-16-3
     useOffline: true, // https://nextjs.org/blog/next-16-3
   },
+  async redirects() {
+    //
+    return [
+      {
+        source: "/:path*", // 全てのパスを対象にする
+        has: [{ type: "host", value: "65-blog-app\\.vercel\\.app" }], // host名が左記のときだけ発動
+        destination: "https://www.65banseki.dev/:path*",
+        permanent: true, // 308（恒久的な転送）にする
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,4 +1,11 @@
+import { Metadata } from "next";
 import Link from "next/link";
+import { siteOpenGraph } from "../lib/siteMetadata";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { ...siteOpenGraph, type: "website", url: "/" },
+};
 
 const navs = [
   {

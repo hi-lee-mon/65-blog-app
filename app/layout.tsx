@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.65banseki.dev"),
+  metadataBase: new URL("https://www.65banseki.dev"), // 全ページのメタデータで継承される以降相対パスで書くことができる（/postsはhttps://www.65banseki.dev/postsになる）
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,

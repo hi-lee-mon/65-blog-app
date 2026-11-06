@@ -430,7 +430,7 @@ for p in index posts posts/hello tags tags/mdx; do echo "== $p"; grep -oE '<meta
 <meta property="og:url" content="https://www.65banseki.dev/tags/mdx"/>
 ```
 
-`og:url` は全ページに出た。ところが、`posts`・`tags`・`tags/mdx` から **`og:image` が消えた**。`?` の後ろの文字は、手元では違う値になることがある。
+`og:url` は全ページに出た。ところが、`posts`・`tags`・`tags/mdx` から **`og:image` が消えた**。`?` の後ろの文字は画像の中身から作られるので、手元では違う値になることがある。
 
 **何が起きたのか** — Next.js の中身を読む。
 
@@ -495,7 +495,12 @@ export async function generateMetadata(
   return {
     title: "記事一覧",
     alternates: { canonical: "/posts" },
-    openGraph: { ...siteOpenGraph, type: "website", url: "/posts", images: openGraph?.images },
+    openGraph: {
+      ...siteOpenGraph,
+      type: "website",
+      url: "/posts",
+      images: openGraph?.images,
+    },
   };
 }
 ```
@@ -664,17 +669,17 @@ curl -s https://www.65banseki.dev/posts/hello | grep -oE '<link rel="canonical"[
 
 ### うまくいかないとき
 
-| 症状                                                 | 原因と対処                                                                                               |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 全ページの `canonical` がトップページになる          | レイアウトに `alternates` が残っている。手順 3・4 で足した3行を消す                                      |
-| あるページだけ `canonical` が `(none)`               | そのページに `alternates` を書き忘れている。手順 5 を見る                                                |
-| 一覧やタグのページに `og:image` が出ない             | `parent` から受け取った画像を渡していない。手順 7 の `images: openGraph?.images` を見る                  |
-| `og:title` や `og:locale` が消えた                   | `openGraph` に `...siteOpenGraph` を書き忘れている。子の `openGraph` は親の値を丸ごと隠す                |
-| `ResolvingMetadata` が見つからないという型エラー     | `import type { Metadata, ResolvingMetadata } from "next";` に変えていない                                |
-| 手順 9 の1行目が `200`                               | `has` の `value` の綴りか、`\\.` が違う。`next.config.ts` を変えたら `bun run build` をやり直す          |
-| 手順 9 の2行目も `308` になる                        | `has` の条件がない。転送が全ホストに効いていて、`www` から `www` へ送り続ける状態になる。`has` を足す    |
-| `curl: (7) Failed to connect to localhost port 3123` | サーバーが起動していないか、別のポートで起動している。手順 9 の `bun run start` を見る                   |
-| `EADDRINUSE: address already in use :::3123`         | 前に起動したサーバーが残っている。そのターミナルで `Ctrl + C` を押すか、`PORT=3124` のように番号を変える |
+| 症状                                                   | 原因と対処                                                                                               |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| 全ページの `canonical` がトップページになる            | レイアウトに `alternates` が残っている。手順 3・4 で足した3行を消す                                      |
+| あるページだけ `canonical` が `(none)`                 | そのページに `alternates` を書き忘れている。手順 5 を見る                                                |
+| 一覧やタグのページに `og:image` が出ない               | `parent` から受け取った画像を渡していない。手順 7 の `images: openGraph?.images` を見る                  |
+| `og:title` や `og:locale` が消えた                     | `openGraph` に `...siteOpenGraph` を書き忘れている。子の `openGraph` は親の値を丸ごと隠す                |
+| `parent` の型で `Cannot find name 'ResolvingMetadata'` | `import type { Metadata, ResolvingMetadata } from "next";` に変えていない                                |
+| 手順 9 の1行目が `200`                                 | `has` の `value` の綴りか、`\\.` が違う。`next.config.ts` を変えたら `bun run build` をやり直す          |
+| 手順 9 の2行目も `308` になる                          | `has` の条件がない。転送が全ホストに効いていて、`www` から `www` へ送り続ける状態になる。`has` を足す    |
+| `curl: (7) Failed to connect to localhost port 3123`   | サーバーが起動していないか、別のポートで起動している。手順 9 の `bun run start` を見る                   |
+| `EADDRINUSE: address already in use :::3123`           | 前に起動したサーバーが残っている。そのターミナルで `Ctrl + C` を押すか、`PORT=3124` のように番号を変える |
 
 ここに載っていないエラーが出たら、そのまま貼って聞いてほしい。
 
