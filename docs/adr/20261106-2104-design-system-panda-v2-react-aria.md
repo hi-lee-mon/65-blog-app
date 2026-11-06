@@ -34,7 +34,7 @@
 - ビルド時に CSS を作るので、Server Components のまま使える。設計書の時点から変わらない理由
 - トークン、意味トークン（`semanticTokens`）、テーマ、部品の見た目の型（recipes）が最初からそろっている。デザインシステムを組むための道具が1つにまとまっている
 - v2 は 2026-09-29 に正式版が出た（2026-11-06 時点で 2.5.0）。コンパイラが Rust で書き直され、Oxc の構文解析器を使うようになった。このリポジトリで使っている oxlint・oxfmt も Oxc でできている
-- インストール時スクリプトがない。OS ごとのバイナリを `optionalDependencies` で配る形なので、`trustedDependencies: []` のまま入る（`npm view @pandacss/dev` と `npm view @pandacss/compiler` で確認）
+- `@pandacss/dev` と `@pandacss/compiler` にはインストール時スクリプトがない。コンパイラは OS ごとのバイナリを `optionalDependencies` で配る（`npm view` で確認）。依存の `@parcel/watcher` には、組み立て済みのファイルがない OS のためにソースから組み立てる `install` スクリプトがあり、`trustedDependencies: []` で止まる。macOS では組み立て済みのファイルが入り、`@parcel/watcher` を使うのは `panda --watch` だけなので、止めたままでよい（2-1 の調査で実測。当初この ADR には「インストール時スクリプトがない」とだけ書いていた）
 
 ### React Aria から始める理由
 
@@ -65,8 +65,8 @@ React Aria は、見た目のない部品の層（`react-aria-components`）と�
 
 ## 気をつけること
 
-- Panda CSS v2 は ESM 専用で、`package.json` に `"type": "module"` が要る。今は書いていない。足すと、`oxlint-plugins/nextjs-metadata.mts` の拡張子を `.mts` にした理由（ADR `20261106-1800-require-canonical-lint-rule.md`）がなくなる。ほかの設定ファイルが動き続けるかと合わせて、2-1 で確かめる
-- Panda CSS v2 の公式ブログは Turbopack に触れていない。PostCSS の設定は CommonJS のまま動くとだけ書いてある。Next.js 16 の Turbopack で PostCSS 経由で動くかは、2-1 で確かめる（未確認）
+- Panda CSS v2 は ESM 専用で、`package.json` に `"type": "module"` が要る。今は書いていない。足すと、`oxlint-plugins/nextjs-metadata.mts` の拡張子を `.mts` にした理由（ADR `20261106-1800-require-canonical-lint-rule.md`）がなくなる。2-1 の調査で、`"type": "module"` を足しても開発サーバー・ビルド・型検査・lint・format が通ることを確かめた（2026-11-06、一時ディレクトリで実測。足さなくても通った）
+- Panda CSS v2 の公式ブログは Turbopack に触れていない。PostCSS の設定は CommonJS のまま動くとだけ書いてある。2-1 の調査で、Next.js 16.4.1 の Turbopack の開発サーバーとビルドで、PostCSS 経由で動くことを確かめた（2026-11-06、一時ディレクトリで実測）
 - React Aria は部品の状態をデータ属性で表す。Panda の組み込みの条件は、ほとんどが同じ属性を見ているが、ホバーだけ名前が違う（React Aria は `data-hovered`、Panda の `_hover` は `[data-hover]`）。2-6 で条件を足すか、コミュニティのプリセット `pandacss-react-aria-components` を使うかを決める。このプリセットが v2 で動くかは未確認
 - 依存を足すときは、ADR `20261103-1657-supply-chain-hardening.md` に従って版を固定する
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
 import Script from "next/script";
+import { css } from "../styled-system/css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,8 +36,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ja" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+    <html
+      lang="ja"
+      className={`${geistSans.variable} ${geistMono.variable} ${css({ height: "full", fontSmoothing: "antialiased" })}`}
+    >
+      <body
+        className={css({
+          minHeight: "full",
+          display: "flex",
+          flexDirection: "column",
+        })}
+      >
         <Link href="/">ホーム</Link>
         {children}
         {process.env.CF_WEB_ANALYTICS_TOKEN && (

@@ -25,3 +25,6 @@ dist/
 
 # Next.js が生成する。中身は dev と build で変わるので追跡しない（Next.js の TypeScript ガイドの指示）
 next-env.d.ts
+
+# PandaCSS
+styled-system/
