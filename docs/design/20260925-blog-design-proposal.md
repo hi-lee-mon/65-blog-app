@@ -124,11 +124,27 @@ Panda CSS（ビルド時に CSS を生成するスタイリングライブラリ
 
 参考にするデザインシステムは役割で分けると迷わない。[デジタル庁デザインシステム](https://design.digital.go.jp/)は母屋の読みやすさとアクセシビリティ（色のコントラスト、文字サイズ、フォーカスの見え方）の手本にする。Apple の Human Interface Guidelines は、動きや手触りの気持ちよさの手本にする。
 
-コンポーネントは Mantine の作りを参考にする。たとえば、見た目の部品を外から差し替えられる Styles API や、`@mantine/hooks` の小さなフック群が参考になる。作る順番は、よく使う順がよい。
+コンポーネントは、状態を持つかどうかで作り方を分ける（ADR `20261106-2104-design-system-panda-v2-react-aria.md`）。
 
-1. 文字と余白の土台（Text, Title, Stack, Group）
-2. 記事ページで必要なもの（Anchor, Badge, Card, CodeBlock）
-3. 触って楽しいもの（Tooltip, Tabs, Modal など）
+- 状態を持たない部品（文字、リンク、タグ、カード）: 最初から Panda で自作する
+- 状態を持つ部品（メニュー、ダイアログ、テーマ切り替え）: React Aria の部品（`react-aria-components`）から始め、React Aria のフック（`react-aria`）へ、さらに自作へと置き換える
+
+部品の API の形は Mantine を参考にする。たとえば、見た目の部品を外から差し替えられる Styles API や、`@mantine/hooks` の小さなフック群が参考になる。
+
+### 作る順番
+
+今ある部品の棚卸しから始め、値（トークン）を決めてから部品に進む。部品は単体で作りためず、記事ページを作りながら育てる。理由と先行研究は ADR に書いた。
+
+| Step | 内容                                                                                     |
+| ---- | ---------------------------------------------------------------------------------------- |
+| 2-0  | デザインシステムとは何かを知り、今のサイトを棚卸しする                                   |
+| 2-1  | Panda CSS v2 を入れ、Tailwind CSS を外す                                                 |
+| 2-2  | 基本トークン（色・文字の大きさ・余白）を作る                                             |
+| 2-3  | 意味トークンとダークモードを作る                                                         |
+| 2-4  | 記事ページの文字組みを整える（Text, Title, Stack, Group）                                |
+| 2-5  | 状態を持たない部品（Anchor, Badge, Card, CodeBlock）を作り、`/design-system` に並べる    |
+| 2-6  | React Aria で状態を持つ部品（テーマ切り替え、メニュー、Tooltip, Tabs, Modal など）を作る |
+| 2-7  | React Aria のフックに置き換え、さらに自作に置き換える                                    |
 
 作るたびに `/design-system` に並べていけば、見本ページが育っていく。
 
@@ -199,3 +215,4 @@ Umami をセルフホストする段まで進んだら、Grafana から Umami �
 4. **原稿の読み込み方。** 決定済み。unified で自前に組み、Next.js に依存させない（ADR `20260925-1914-unified-content-pipeline.md`）
 5. **シンタックスハイライター。** 決定済み。ビルド時に Shiki で色を付ける。gpu-lexer は Lab で試す題材にする（ADR `20260925-1923-syntax-highlighter-shiki.md`）
 6. **二層構成。** 決定済み（ADR `20260925-1702-two-layer-site-structure.md`）
+7. **デザインシステムの技術と作る順番。** 決定済み。Panda CSS v2 で組み、状態を持つ部品は React Aria から自作へ置き換える。2-0 から 2-7 の順に進める（ADR `20261106-2104-design-system-panda-v2-react-aria.md`）
