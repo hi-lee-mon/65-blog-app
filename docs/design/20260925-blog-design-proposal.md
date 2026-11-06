@@ -170,20 +170,22 @@ Next.js の同梱ガイド（`internationalization.md`）の形に沿うと、�
 
 Grafana は、ほかの道具が集めた数字をグラフにして並べる画面で、自分では数えない。ふだんはサーバーの見張りに使うもので、自前のサーバーがないこのサイトでは本来は要らない。学習のために、1-12 で入れた Umami の数字を Grafana で見る形で、小さく試す。
 
-- 1-13: Grafana Cloud の無料プランに、Infinity データソース（REST API の応答をグラフにするプラグイン）を足し、Umami Cloud の API（`https://api.umami.is/v1`、API キーを `Authorization: Bearer` で渡す）から訪問数と `tag-click` の数を取ってグラフにする。サイトのコードは変えない
+- 1-14: Grafana Cloud の無料プランに、Infinity データソース（REST API の応答をグラフにするプラグイン）を足し、Umami Cloud の API（`https://api.umami.is/v1`、API キーを `Authorization: Bearer` で渡す）から訪問数と `tag-click` の数を取ってグラフにする。サイトのコードは変えない
 
 着手する前に確かめること（2026-11-06 時点で未確認）は、次の2つ。
 
-- Umami Cloud の無料プラン（Hobby）で API キーを作れるか（https://docs.umami.is/docs/cloud/api-key には、Cloud で API が使えるとだけある）
+- Umami Cloud の無料プラン（Hobby）で API キーを作れるか（https://docs.umami.is/docs/cloud/api-key には、Cloud で API が使えるとだけある）。2026-11-06 の追加調査では、第三者のレビューに「Hobby には API がない」とあり、GitHub の Discussions #4332 にも「無料プランで API キーが急に使えなくなった」という報告があった。Hobby では使えない可能性が高い
 - Grafana Cloud の無料プランの上限。Grafana の料金ページは読めず、第三者の記事では「見る人3人、データの保存14日」とあった。Infinity は、見るたびに Umami の API に問い合わせる。Umami の側に数字が残るなら、この保存期間の制限は関係しない見込み
+
+2026-11-06 に分かったこと。Grafana の料金ページでは、無料プランは「見る人は月3人まで、保存は14日」。Infinity は Bearer token の認証に対応し、その場合は Allowed hosts に `https://api.umami.is` を書く必要がある。Umami の API は、ページビューが `/websites/{id}/pageviews`、イベントの時系列が `/websites/{id}/events/series` で、どちらも `startAt`・`endAt`（ミリ秒）が要る。呼べる回数は API キーごとに15秒で50回まで。
 
 Umami をセルフホストする段まで進んだら、Grafana から Umami の PostgreSQL を直接読む形に切り替えられる。
 
-ダッシュボードを展示室（`/lab`）に埋め込むかどうかは、1-13 のあとで決める。決めるときに ADR を書く。
+ダッシュボードを展示室（`/lab`）に埋め込むかどうかは、1-14 のあとで決める。決めるときに ADR を書く。
 
 ### `canonical` の書き忘れを、自作の lint ルールで見つける
 
-1-11 で、`canonical` と `og:url` をページごとに書く形にした。ページを足したときに書き忘れても、エラーは出ない。そこで、oxlint の JS プラグイン（`jsPlugins`）で「`page.tsx` が `alternates.canonical` を書いていない」ことを見つけるルールを自作する。`export const metadata` と `generateMetadata` の両方の書き方に対応する必要がある。番号は、着手するときに決める。
+1-11 で、`canonical` と `og:url` をページごとに書く形にした。ページを足したときに書き忘れても、エラーは出ない。そこで、oxlint の JS プラグイン（`jsPlugins`）で「`page.tsx` が `alternates.canonical` を書いていない」ことを見つけるルールを自作する。`export const metadata` と `generateMetadata` の両方の書き方に対応する必要がある。1-13 で行う（`tickets/1-13-require-canonical-lint.md`）。
 
 ## 対象外にしたこと
 
