@@ -1,0 +1,45 @@
+---
+title: Cloudflare Web Analyticsを理解する
+
+date: 2026-11-03
+
+tags: [cloudflare]
+---
+
+1. ページに小さなスクリプトであるbeacon(びーこん)を読み込ませる（DNS onlyなのでマニュアルで差し込まないといけない）
+2. 訪問時にbeaconが訪問情報をcloudflareに現在のページと前にいたページを送信（「前にいたページ」をリファラーと呼ぶ）
+
+Next.jsのLinkコンポーネントに対応しておりソフトナビゲーションでも遷移とカウント
+
+広告ブロッカーを使っている場合はブロックされる
+
+設定方法としては、cloudflareのTopページでObservability/Analytics/Web analyticsからサイトを追加する
+以下が表示される。Next.js側にマニュアルで追加したいのでdata-cf-beaconのtokenを控える
+
+```js
+<script
+  type="module"
+  src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token": <トークン>}'
+></script>
+```
+
+控えたトークンを使ってscriptをRootLayoutのbody内にセット
+
+```tsx
+<Script
+  src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon={JSON.stringify({
+    token: process.env.CF_WEB_ANALYTICS_TOKEN,
+  })}
+/>
+)}
+```
+
+vercelで環境変数を設定
+
+```
+CF_WEB_ANALYTICS_TOKEN=<token>
+```
+
+あとは、rebuildすれば機能します。

@@ -1,0 +1,86 @@
+---
+title: 65banseki.devを作ってみた
+
+date: 2026-11-06
+
+tags: [blog]
+---
+
+この記事では65banseki.devを作ったなかで問題となった部分をピックアップして書いていく
+
+## alternatesの設定
+
+このブログでは将来zennやqiitaにも同一の記事を投稿する予定です。（クロスポスト）
+
+canonicalを設定することで、クロスポストが重複コンテンツであることをクローラーに教えることができます。
+
+また、ブログページが増えてきたときに検索を追加する予定です。
+例えば`/posts?q=react`や`/posts?sort=new`のようなURLがうまれることになりそうです。これにより大量のページが検索にインデックスされる可能性があります。
+canonicalで/postsと設定しておけば検索エンジンには1つのページだと教えることができます。
+
+注意点としてはページネーションです。1ページ目と2ページ目は全く異なるコンテンツが表示されるので別のページと考えると良さそうです。
+
+また確実に検索結果から除きたいものはnoindexという別の仕組みを使うことができます。
+
+next.jsの場合は全ページに以下のような設定をすればOK(./)
+
+```tsx
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+```
+
+## openGraph.imagesの消滅対応
+
+SNSでURLをシェアする際にopenGraph.imagesを設定した。（意図はalternatesと全く同じ）
+
+ので以下のように各ページで新たにmetadata.openGraphを作った
+
+```ts
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      url: "/posts", // <-これを設定
+    },
+  };
+}
+```
+
+これによって問題が発生した。/postsのopengraph-imageが消えてしまった。
+
+原因はopengraph-image.tsxを使った生成方法。/opengraph-image.tsxでimageを生成していたが、
+
+```ts
+    openGraph: {
+      url: "/posts", // <-これを設定
+    },
+```
+
+によって親から暗黙的に継承されていたopenGraph.imagesが消えてしまった。(metadataはカスケード)
+
+ので以下の様に書くことで解決
+
+```ts
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // openGraphを上書きすると親で指定したopengraph-imageを上書きしてしまうため、parentで参照
+  const { openGraph } = await parent;
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      ...siteOpenGraph,
+      type: "website",
+      url: "/posts",
+      images: openGraph?.images,
+    },
+  };
+}
+```
