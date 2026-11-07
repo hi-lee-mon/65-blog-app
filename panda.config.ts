@@ -1,5 +1,6 @@
 import { defineConfig } from "@pandacss/dev";
 import { tokens } from "./theme/tokens";
+import { semanticTokens } from "./theme/semantic";
 
 export default defineConfig({
   presets: ["@pandacss/preset-base"],
@@ -7,6 +8,11 @@ export default defineConfig({
   strictTokens: true, // themeにない値の指定を禁止する
   include: ["./app/**/*.{ts,tsx}"],
   exclude: [],
+  conditions: {
+    extend: {
+      dark: "@media (prefers-color-scheme: dark)",
+    },
+  },
   globalCss: {
     ":root": {
       colorScheme: "light dark",
@@ -14,15 +20,16 @@ export default defineConfig({
       "--global-font-mono": "{fonts.mono}",
     },
     body: {
-      background: { base: "white", _osDark: "black" },
-      color: { base: "gray.900", _osDark: "gray.50" },
+      background: "bg.default",
+      color: "fg.default",
       fontSize: "16",
       lineHeight: "170",
     },
   },
-
   theme: {
-    tokens, // カスタムテーマ
+    // カスタムテーマ
+    tokens,
+    semanticTokens,
   },
   outdir: "styled-system",
 });

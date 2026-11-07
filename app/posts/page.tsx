@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
 import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../lib/siteMetadata";
+import { css } from "../../styled-system/css";
 
 const { getAllPosts } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -35,7 +36,9 @@ export default async function Page() {
       <ul>
         {posts.map(({ slug, frontmatter }) => (
           <li key={slug}>
-            <time dateTime={frontmatter.date}>{frontmatter.date}</time>
+            <time dateTime={frontmatter.date} className={css({ color: "fg.muted" })}>
+              {frontmatter.date}
+            </time>
             <Link href={`/posts/${slug}`}>{frontmatter.title}</Link>
           </li>
         ))}
