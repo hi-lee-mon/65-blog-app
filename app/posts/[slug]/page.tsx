@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
 import { siteOpenGraph } from "../../../lib/siteMetadata";
+import { css } from "../../../styled-system/css";
+import { prose } from "./prose";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -44,9 +46,17 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
   const { frontmatter, Content, headings } = post;
 
   return (
-    <article>
-      <h1>{frontmatter.title}</h1>
-      <time>{frontmatter.date}</time>
+    <article
+      className={css({
+        width: "full",
+        maxWidth: "640",
+        marginX: "auto",
+        paddingX: "16",
+        paddingY: "48",
+      })}
+    >
+      <h1 className={css({ textStyle: "heading.1" })}>{frontmatter.title}</h1>
+      <time className={css({ color: "fg.muted" })}>{frontmatter.date}</time>
       <ul>
         {frontmatter.tags.map((tag) => (
           <li key={tag}>
@@ -66,7 +76,9 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
         </nav>
       )}
       <hr />
-      <Content />
+      <div className={prose}>
+        <Content />
+      </div>
     </article>
   );
 }

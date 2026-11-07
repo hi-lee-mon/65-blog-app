@@ -13,6 +13,9 @@ export const semanticTokens = defineSemanticTokens({
       muted: {
         value: { base: "{colors.gray.600}", _dark: "{colors.gray.400}" },
       },
+      link: {
+        value: { base: "{colors.blue.800}", _dark: "{colors.blue.300}" },
+      },
     },
   },
 });

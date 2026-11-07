@@ -1,6 +1,7 @@
 import { defineConfig } from "@pandacss/dev";
 import { tokens } from "./theme/tokens";
 import { semanticTokens } from "./theme/semantic";
+import { textStyles } from "./theme/text-styles";
 
 export default defineConfig({
   presets: ["@pandacss/preset-base"],
@@ -30,6 +31,7 @@ export default defineConfig({
     // カスタムテーマ
     tokens,
     semanticTokens,
+    textStyles,
   },
   outdir: "styled-system",
 });

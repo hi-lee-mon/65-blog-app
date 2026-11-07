@@ -12,7 +12,8 @@
     "lint:markup": "markuplint \"app/**/*.tsx\" \"content/**/*.mdx\"",
     "typecheck": "panda codegen && next typegen && tsrs --noEmit",
     "format": "oxfmt",
-    "format:check": "oxfmt --check"
+    "format:check": "oxfmt --check",
+    "pandagen": "bun run panda codegen"
   },
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",
