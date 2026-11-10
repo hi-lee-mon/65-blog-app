@@ -1,0 +1,31 @@
+---
+title: pandaCSS
+
+date: 2026-11-03
+
+tags: [pandacss]
+---
+
+Next.js は CSS を読むときに PostCSS を通す。PostCSS に Panda を登録しておくと、Panda が `app/` の中の `css()` を探して CSS を作り、`@layer` を書いた `globals.css` に差し込む。
+
+## css関数
+
+`css({ color: "gray.900" })` は `color: var(--colors-gray-900)` という CSS になる
+
+## トークン
+
+プリミティブトークン：gray.900のような具体性のある値と名前空間を持つトークン
+
+セマンティックトークン：bg.defaultのような意図や目的を持つトークン。特定のコンテキストに関連した値。dark/lightテーマ毎の色を持つ
+
+## ダークモード
+
+セマンティックトークンを定義して、panda.config.tsに渡すことでダークテーマを簡単に設定できる。
+
+defineSemanticTokensを使う。ただし、defineSemanticTokensは\_osDarkを使わない。
+
+次のコマンドでcssの出力内容を確認できる。
+
+```bash
+bun run panda cssgen --outfile styled-system/check.css
+```
