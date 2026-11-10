@@ -82,4 +82,11 @@ export const tokens = defineTokens({
     1: { value: "0.01em" },
     2: { value: "0.02em" },
   },
+  radii: {
+    8: { value: "0.5rem" },
+    full: { value: "624.9375rem" },
+  },
+  borderWidths: {
+    1: { value: "1px" },
+  },
 });

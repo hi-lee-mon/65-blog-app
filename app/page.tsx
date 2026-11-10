@@ -16,6 +16,10 @@ const navs = [
     href: "/tags",
     label: "タグ一覧",
   },
+  {
+    href: "/design-system",
+    label: "デザインシステム",
+  },
 ];
 
 export default async function Home() {

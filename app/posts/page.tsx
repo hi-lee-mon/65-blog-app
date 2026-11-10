@@ -1,9 +1,9 @@
 import path from "node:path";
-import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
 import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../lib/siteMetadata";
 import { css } from "../../styled-system/css";
+import { PostCard } from "../_components/post-card";
 
 const { getAllPosts } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -33,13 +33,10 @@ export default async function Page() {
   return (
     <main>
       <h1>記事一覧</h1>
-      <ul>
+      <ul className={css({ display: "flex", flexDirection: "column", gap: "16" })}>
         {posts.map(({ slug, frontmatter }) => (
           <li key={slug}>
-            <time dateTime={frontmatter.date} className={css({ color: "fg.muted" })}>
-              {frontmatter.date}
-            </time>
-            <Link href={`/posts/${slug}`}>{frontmatter.title}</Link>
+            <PostCard slug={slug} title={frontmatter.title} date={frontmatter.date} />
           </li>
         ))}
       </ul>

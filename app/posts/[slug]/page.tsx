@@ -1,11 +1,11 @@
 import path from "node:path";
 import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { Metadata } from "next";
 import { siteOpenGraph } from "../../../lib/siteMetadata";
 import { css } from "../../../styled-system/css";
 import { prose } from "./prose";
+import { Tag } from "../../_components/tag";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -57,10 +57,10 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
     >
       <h1 className={css({ textStyle: "heading.1" })}>{frontmatter.title}</h1>
       <time className={css({ color: "fg.muted" })}>{frontmatter.date}</time>
-      <ul>
+      <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
         {frontmatter.tags.map((tag) => (
           <li key={tag}>
-            <Link href={`/tags/${tag}`}>{tag}</Link>
+            <Tag tag={tag} size="sm" />
           </li>
         ))}
       </ul>

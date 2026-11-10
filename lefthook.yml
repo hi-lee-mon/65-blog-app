@@ -21,4 +21,4 @@ pre-commit:
     # 型の誤りはステージしていないファイルにも波及するので、ファイルを絞らずプロジェクト全体を見る
     - name: typecheck
       glob: "*.{ts,tsx,mts,cts}"
-      run: bun run typecheck
+      run: bun run tc

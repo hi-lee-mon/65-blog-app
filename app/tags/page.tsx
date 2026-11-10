@@ -3,6 +3,7 @@ import { createPostReader } from "../../lib/createPostReader";
 import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../lib/siteMetadata";
 import { TagLink } from "./_components/tag-link";
+import { css } from "../../styled-system/css";
 
 const { getAllTags } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -32,7 +33,7 @@ export default async function Page() {
   return (
     <main>
       <h1>タグ一覧</h1>
-      <ul>
+      <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
         {tags.map((tag) => (
           <li key={tag}>
             <TagLink tag={tag} />
