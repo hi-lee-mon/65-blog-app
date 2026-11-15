@@ -8,6 +8,11 @@ import { PostCard } from "../../_components/post-card";
 
 const { getAllTags, getPostsByTag } = createPostReader(path.join(process.cwd(), "content"));
 
+// 本体と generateMetadata が params を読む。
+// 本体は <Suspense> に移せるが、generateMetadata は <head> に入るので移せず、警告が残る。
+// ADR 20261115-0059-instant-false-for-dynamic-routes.md
+export const instant = false;
+
 export async function generateStaticParams() {
   const tags = await getAllTags();
   return tags.map((tag) => ({ tag }));

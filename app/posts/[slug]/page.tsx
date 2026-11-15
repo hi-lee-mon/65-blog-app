@@ -9,6 +9,11 @@ import { Tag } from "../../_components/tag";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
+// 本体・generateMetadata・opengraph-image.tsx のすべてが params を読む。
+// 本体は <Suspense> に移せるが、メタデータの2つは <head> に入るので移せず、警告が残る。
+// ADR 20261115-0059-instant-false-for-dynamic-routes.md
+export const instant = false;
+
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
   return slugs.map((slug) => ({ slug }));
