@@ -1,0 +1,95 @@
+---
+title: umami v3 cloudを触ってみる
+
+date: 2026-11-02
+
+tags: [umami]
+---
+
+[umami](https://cloud.umami.is/login) にアクセス
+
+登録をする。リージョンはUSとEUしかない。イベントの送信は非同期かつ裏側で行われるので日本じゃなくても影響はほぼないはず。
+今回はUSを選んだがEUは情報の扱いに厳しいのでEUがよかったらしい。
+
+ログインできたらサイトを追加する
+
+www.65banseki.devを追加。
+
+追加するとscriptタグが生成されるので控える
+
+RootLayoutに次を追加
+
+```tsx
+{
+  process.env.UMAMI_WEBSITE_ID && (
+    <Script
+      src="https://cloud.umami.is/script.js"
+      data-website-id={process.env.UMAMI_WEBSITE_ID}
+      // data-domains="www.65banseki.dev" // このホスト名のときだけ動く
+    />
+  );
+}
+</body>
+
+```
+
+あとはイベントを送信する部分を実装する
+
+```tsx
+"use client";
+
+import Link from "next/link";
+
+export function TagLink({ tag }: { tag: string }) {
+  return (
+    <Link href={`/tags/${tag}`} onClick={() => window.umami?.track("tag-click", { tag })}>
+      {tag}
+    </Link>
+  );
+}
+```
+
+windowオブジェクトにはプロパティが生えてないので次のd.tsを追加する
+
+```ts
+type EventName = "tag-click";
+
+interface Window {
+  umami?: {
+    track: (eventName: EventName, data?: Record<string, string | number | boolean>) => void;
+  };
+}
+```
+
+あとは画面にリンクを配置する
+
+```tsx
+export default async function Page() {
+  "use cache";
+
+  const tags = await getAllTags();
+
+  return (
+    <main>
+      <h1>タグ一覧</h1>
+      <ul>
+        {tags.map((tag) => (
+          <li key={tag}>
+            <Link href={`/tags/${tag}`}>{tag}</Link>
+            <TagLink tag={tag} />
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+ローカルで動作確認する場合は、先程控えたスクリプトタグのdata-website-idを環境変数にセットする。
+
+```bash
+UMAMI_WEBSITE_ID=<id> bun run build
+PORT=3123 bun run start
+```
+
+あとはリンクをクリックしてwebページで記録されているか確認します。

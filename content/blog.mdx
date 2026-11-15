@@ -1,0 +1,129 @@
+---
+title: 65banseki.devを作ってみた
+
+date: 2026-11-06
+
+tags: [blog]
+---
+
+この記事では65banseki.devを作ったなかで問題となった部分をピックアップして書いていく
+
+## alternatesの設定
+
+このブログでは将来zennやqiitaにも同一の記事を投稿する予定です。（クロスポスト）
+
+canonicalを設定することで、クロスポストが重複コンテンツであることをクローラーに教えることができます。
+
+また、ブログページが増えてきたときに検索を追加する予定です。
+例えば`/posts?q=react`や`/posts?sort=new`のようなURLがうまれることになりそうです。これにより大量のページが検索にインデックスされる可能性があります。
+canonicalで/postsと設定しておけば検索エンジンには1つのページだと教えることができます。
+
+注意点としてはページネーションです。1ページ目と2ページ目は全く異なるコンテンツが表示されるので別のページと考えると良さそうです。
+
+また確実に検索結果から除きたいものはnoindexという別の仕組みを使うことができます。
+
+next.jsの場合は全ページに以下のような設定をすればOK(./)
+
+```tsx
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+```
+
+## openGraph.imagesの消滅対応
+
+SNSでURLをシェアする際にopenGraph.imagesを設定した。（意図はalternatesと全く同じ）
+
+ので以下のように各ページで新たにmetadata.openGraphを作った
+
+```ts
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      url: "/posts", // <-これを設定
+    },
+  };
+}
+```
+
+これによって問題が発生した。/postsのopengraph-imageが消えてしまった。
+
+原因はopengraph-image.tsxを使った生成方法。/opengraph-image.tsxでimageを生成していたが、
+
+```ts
+    openGraph: {
+      url: "/posts", // <-これを設定
+    },
+```
+
+によって親から暗黙的に継承されていたopenGraph.imagesが消えてしまった。(metadataはカスケード)
+
+ので以下の様に書くことで解決
+
+```ts
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // openGraphを上書きすると親で指定したopengraph-imageを上書きしてしまうため、parentで参照
+  const { openGraph } = await parent;
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      ...siteOpenGraph,
+      type: "website",
+      url: "/posts",
+      images: openGraph?.images,
+    },
+  };
+}
+```
+
+## App Shell
+
+あるルートのどのURLを開いても同じになる部分のことをApp Shellという。App Shellはリンクが画面に見えた時点で、ブラウザがクリックより前に取ってきてくれる。これによりクリックした瞬間に即時画面が表示される。
+
+App Shellを意識して実装することでSPAのUXを作ることができる。
+
+Next.js v16で`cacheComponents`と`partialPrefetching`を有効化していると使用することができる。
+
+### App Shellの使用パターン
+
+App Shellが使われるパターンをいくつか見てみる
+
+#### /
+
+ホームページではデータ取得していないのでuse cacheやsuspenseを使う必要がない。ページ全体がApp Shellとなる。
+
+#### /posts
+
+この画面を`use cache`でキャッシュしている場合、事前にその画面は存在し、また誰が見ても同じ画面に見えることになる。
+use cacheしない場合は非同期部分をSuspenseに逃がす必要があるので、Suspenseのfallback & Suspenseの外側がApp Shellとなる。
+
+#### /posts/[id]
+
+idを参照する場合、そのページは`/posts/a`と`/posts/b`のようにURLによって中身が異なるのでページ全体がApp Shellにならない。
+記事の中身まで先読みすると、画面に見えているリンクの数だけ取りに行くことになり、一覧に記事のリンクが 50 本あれば、50 回。その通信量を避けるために、中身はクリックされてから取りに行く。use cacheしてページが静的であれば事前に表示できるわけではないので注意。
+
+App Shellを増やすためにparams部分を別コンポーネントにパススルーしてSuspenseでラップする方法がありますが、今回の詳細記事ページの実装では、paramsを使った表示がほとんどでApp Shellとして表示する部分がないので、`export const instant = false;`を使って警告を止めます。
+
+また、本体をSuspenseでラップしても警告は消えません。`generateMetadata`とopengraph-imageもparamsを読んでいて、これらは`<head>`に入る情報なのでSuspenseでラップできないためです。
+headに入る情報は/postsではなく/posts/aなどにアクセスしたときに入ります。
+
+開発中はparamsを読んでいるのでこのページがApp Shellになっていないということを教えてくれます。paramsの部分をSuspenseでラップするかinstantで警告を消してくださいという表示がでます。
+
+instantは開発中の警告を止める為だけに書きます。もし、書かなくても挙動は「このページはApp Shellではないので事前に取得できず、リンククリック後にページを取りに行く」という動きになります。
+
+### App Shellの見極め方
+
+あるルートのどのURLを開いても同じになる部分のことを意識すれば良い。
+
+App Shellにならないのは、URLによって値が変わるparams（Dynamic Routeの`[id]`の部分）とsearchParams（クエリパラメータ）をSuspenseの外で読んでいる場合。Dynamic Routeであること自体が原因ではないので、paramsを読む部分をSuspenseに移せば、それ以外の部分はApp Shellになる。
+
+cookieやheaderは見る人ごとに変わるが、URLによっては変わらないのでApp Shellに入る。

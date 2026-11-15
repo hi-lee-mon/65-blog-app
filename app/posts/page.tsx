@@ -1,13 +1,29 @@
 import path from "node:path";
-import Link from "next/link";
 import { createPostReader } from "../../lib/createPostReader";
-import { Metadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
+import { siteOpenGraph } from "../../lib/siteMetadata";
+import { css } from "../../styled-system/css";
+import { PostCard } from "../_components/post-card";
 
 const { getAllPosts } = createPostReader(path.join(process.cwd(), "content"));
 
-export const metadata: Metadata = {
-  title: "記事一覧",
-};
+export async function generateMetadata(
+  _props: PageProps<"/posts">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // openGraphを上書きすると親で指定したopengraph-imageを上書きしてしまうため、parentで参照
+  const { openGraph } = await parent;
+  return {
+    title: "記事一覧",
+    alternates: { canonical: "/posts" },
+    openGraph: {
+      ...siteOpenGraph,
+      type: "website",
+      url: "/posts",
+      images: openGraph?.images,
+    },
+  };
+}
 
 export default async function Page() {
   "use cache";
@@ -17,11 +33,10 @@ export default async function Page() {
   return (
     <main>
       <h1>記事一覧</h1>
-      <ul>
+      <ul className={css({ display: "flex", flexDirection: "column", gap: "16" })}>
         {posts.map(({ slug, frontmatter }) => (
           <li key={slug}>
-            <time dateTime={frontmatter.date}>{frontmatter.date}</time>
-            <Link href={`/posts/${slug}`}>{frontmatter.title}</Link>
+            <PostCard slug={slug} title={frontmatter.title} date={frontmatter.date} />
           </li>
         ))}
       </ul>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
 import Script from "next/script";
+import { css } from "../styled-system/css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.65banseki.dev"),
+  metadataBase: new URL("https://www.65banseki.dev"), // 全ページのメタデータで継承される以降相対パスで書くことができる（/postsはhttps://www.65banseki.dev/postsになる）
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
@@ -35,8 +36,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ja" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+    <html
+      lang="ja"
+      className={`${geistSans.variable} ${geistMono.variable} ${css({ height: "full", fontSmoothing: "antialiased" })}`}
+    >
+      <body
+        className={css({
+          minHeight: "full",
+          display: "flex",
+          flexDirection: "column",
+        })}
+      >
         <Link href="/">ホーム</Link>
         {children}
         {process.env.CF_WEB_ANALYTICS_TOKEN && (
@@ -45,6 +55,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             data-cf-beacon={JSON.stringify({
               token: process.env.CF_WEB_ANALYTICS_TOKEN,
             })}
+          />
+        )}
+        {process.env.UMAMI_WEBSITE_ID && (
+          <Script
+            src="https://cloud.umami.is/script.js"
+            data-website-id={process.env.UMAMI_WEBSITE_ID}
+            data-domains="www.65banseki.dev" // このホスト名のときだけ動く
           />
         )}
       </body>
