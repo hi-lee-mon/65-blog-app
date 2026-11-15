@@ -16,7 +16,7 @@ pre-commit:
       glob:
         - "app/*.tsx"
         - "content/*.mdx"
-      run: bun run lint:markup
+      run: bun run l:markup
 
     # 型の誤りはステージしていないファイルにも波及するので、ファイルを絞らずプロジェクト全体を見る
     - name: typecheck
