@@ -33,12 +33,15 @@ export const tokens = defineTokens({
     },
   },
   fonts: {
+    // sansは線の端に飾りがないゴシック体の慣習的な名前でsans-serifのこと
     sans: {
       value:
-        // 英数字はgeist.geistに日本語は含まれないので次点のHiragino Sansが採用
+        // 英数字はgeistに含まれる。geistに日本語は含まれないので次点のHiragino Sansが採用
         // Hiragino SansはmacOSとiOSに同梱されており、なければNoto Sans JPが使われる
+        // varで読み込むcss変数はRootLayoutでhtmlタグで展開される
         'var(--font-geist-sans), "Hiragino Sans", "Noto Sans JP", sans-serif',
     },
+    // monoは文字幅が全部同じ等幅フォントでmonospaceと呼ぶ
     mono: { value: "var(--font-geist-mono), monospace" },
   },
   fontSizes: {

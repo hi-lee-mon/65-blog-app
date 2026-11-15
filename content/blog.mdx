@@ -84,3 +84,46 @@ export async function generateMetadata(
   };
 }
 ```
+
+## App Shell
+
+あるルートのどのURLを開いても同じになる部分のことをApp Shellという。App Shellはリンクが画面に見えた時点で、ブラウザがクリックより前に取ってきてくれる。これによりクリックした瞬間に即時画面が表示される。
+
+App Shellを意識して実装することでSPAのUXを作ることができる。
+
+Next.js v16で`cacheComponents`と`partialPrefetching`を有効化していると使用することができる。
+
+### App Shellの使用パターン
+
+App Shellが使われるパターンをいくつか見てみる
+
+#### /
+
+ホームページではデータ取得していないのでuse cacheやsuspenseを使う必要がない。ページ全体がApp Shellとなる。
+
+#### /posts
+
+この画面を`use cache`でキャッシュしている場合、事前にその画面は存在し、また誰が見ても同じ画面に見えることになる。
+use cacheしない場合は非同期部分をSuspenseに逃がす必要があるので、Suspenseのfallback & Suspenseの外側がApp Shellとなる。
+
+#### /posts/[id]
+
+idを参照する場合、そのページは`/posts/a`と`/posts/b`のようにURLによって中身が異なるのでページ全体がApp Shellにならない。
+記事の中身まで先読みすると、画面に見えているリンクの数だけ取りに行くことになり、一覧に記事のリンクが 50 本あれば、50 回。その通信量を避けるために、中身はクリックされてから取りに行く。use cacheしてページが静的であれば事前に表示できるわけではないので注意。
+
+App Shellを増やすためにparams部分を別コンポーネントにパススルーしてSuspenseでラップする方法がありますが、今回の詳細記事ページの実装では、paramsを使った表示がほとんどでApp Shellとして表示する部分がないので、`export const instant = false;`を使って警告を止めます。
+
+また、本体をSuspenseでラップしても警告は消えません。`generateMetadata`とopengraph-imageもparamsを読んでいて、これらは`<head>`に入る情報なのでSuspenseでラップできないためです。
+headに入る情報は/postsではなく/posts/aなどにアクセスしたときに入ります。
+
+開発中はparamsを読んでいるのでこのページがApp Shellになっていないということを教えてくれます。paramsの部分をSuspenseでラップするかinstantで警告を消してくださいという表示がでます。
+
+instantは開発中の警告を止める為だけに書きます。もし、書かなくても挙動は「このページはApp Shellではないので事前に取得できず、リンククリック後にページを取りに行く」という動きになります。
+
+### App Shellの見極め方
+
+あるルートのどのURLを開いても同じになる部分のことを意識すれば良い。
+
+App Shellにならないのは、URLによって値が変わるparams（Dynamic Routeの`[id]`の部分）とsearchParams（クエリパラメータ）をSuspenseの外で読んでいる場合。Dynamic Routeであること自体が原因ではないので、paramsを読む部分をSuspenseに移せば、それ以外の部分はApp Shellになる。
+
+cookieやheaderは見る人ごとに変わるが、URLによっては変わらないのでApp Shellに入る。
