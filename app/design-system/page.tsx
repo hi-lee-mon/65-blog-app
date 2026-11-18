@@ -31,7 +31,7 @@ const section = css({
 
 export default function Page() {
   return (
-    <main
+    <div
       className={css({
         width: "full",
         maxWidth: "640",
@@ -61,6 +61,6 @@ export default function Page() {
         <h2 className={css({ textStyle: "heading.2" })}>PostCard</h2>
         <PostCard slug="blog" title="65banseki.devを作ってみた" date="2026-11-06" />
       </section>
-    </main>
+    </div>
   );
 }

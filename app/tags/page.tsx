@@ -31,7 +31,7 @@ export default async function Page() {
   const tags = await getAllTags();
 
   return (
-    <main>
+    <>
       <h1>タグ一覧</h1>
       <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
         {tags.map((tag) => (
@@ -40,6 +40,6 @@ export default async function Page() {
           </li>
         ))}
       </ul>
-    </main>
+    </>
   );
 }

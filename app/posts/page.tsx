@@ -31,7 +31,7 @@ export default async function Page() {
   const posts = await getAllPosts();
 
   return (
-    <main>
+    <>
       <h1>記事一覧</h1>
       <ul className={css({ display: "flex", flexDirection: "column", gap: "16" })}>
         {posts.map(({ slug, frontmatter }) => (
@@ -40,6 +40,6 @@ export default async function Page() {
           </li>
         ))}
       </ul>
-    </main>
+    </>
   );
 }

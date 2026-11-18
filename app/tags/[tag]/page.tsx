@@ -48,7 +48,7 @@ export default async function Page({ params }: PageProps<"/tags/[tag]">) {
   }
 
   return (
-    <main>
+    <>
       <h1>タグ: {tag}</h1>
       <ul className={css({ display: "flex", flexDirection: "column", gap: "16" })}>
         {posts.map(({ slug, frontmatter }) => (
@@ -57,6 +57,6 @@ export default async function Page({ params }: PageProps<"/tags/[tag]">) {
           </li>
         ))}
       </ul>
-    </main>
+    </>
   );
 }

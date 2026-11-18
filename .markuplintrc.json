@@ -11,6 +11,10 @@
   "excludeFiles": ["./.next/**/*"],
   "nodeRules": [
     {
+      "selector": "main#main",
+      "rules": { "no-hardcoded-id": false }
+    },
+    {
       "selector": "code[class^='language-']",
       "rules": { "no-unknown-attr": false }
     }
