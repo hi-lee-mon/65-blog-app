@@ -32,3 +32,7 @@ styled-system/
 # Storybook のビルドの出力とログ
 storybook-static/
 *storybook.log
+
+# Playwright の検査の出力（失敗時のスクリーンショットと HTML レポート）。実行のたびに変わるので追跡しない
+test-results/
+playwright-report/

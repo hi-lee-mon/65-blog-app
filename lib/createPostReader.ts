@@ -54,7 +54,10 @@ export function createPostReader(contentDir: string) {
           [
             rehypeShiki,
             {
-              themes: { light: "github-light", dark: "github-dark" },
+              themes: {
+                light: "github-light-high-contrast",
+                dark: "github-dark-high-contrast",
+              },
               defaultColor: "light-dark()",
             },
           ],

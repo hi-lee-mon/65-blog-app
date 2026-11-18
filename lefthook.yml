@@ -16,9 +16,22 @@ pre-commit:
       glob:
         - "app/*.tsx"
         - "content/*.mdx"
-      run: bun run l:markup
+      run: bun run l:mu
 
     # 型の誤りはステージしていないファイルにも波及するので、ファイルを絞らずプロジェクト全体を見る
     - name: typecheck
       glob: "*.{ts,tsx,mts,cts}"
       run: bun run tc
+
+# ページの見た目に関わるファイルを push するときだけ、ビルドして axe で検査する。
+# pre-commit に置かない理由: 検査は 12〜27 秒かかり、コミットのたびに待たせないため（ADR 20261115-2200）
+pre-push:
+  jobs:
+    - name: a11y
+      glob:
+        - "app/*"
+        - "lib/*"
+        - "theme/*"
+        - "content/*"
+        - "panda.config.ts"
+      run: bun run a11y
