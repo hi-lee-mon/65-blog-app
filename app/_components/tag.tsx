@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { cva, type RecipeVariantProps } from "../../styled-system/css";
+import { AppLink } from "./app-link";
 
 export const tagStyle = cva({
   base: {
@@ -25,8 +25,8 @@ type TagProps = { tag: string; onClick?: () => void } & RecipeVariantProps<typeo
 
 export function Tag({ tag, size, onClick }: TagProps) {
   return (
-    <Link href={`/tags/${tag}`} className={tagStyle({ size })} onClick={onClick}>
+    <AppLink href={`/tags/${tag}`} className={tagStyle({ size })} onClick={onClick}>
       {tag}
-    </Link>
+    </AppLink>
   );
 }

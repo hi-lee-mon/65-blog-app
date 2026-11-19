@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { SITE_NAME } from "../../lib/siteMetadata";
 import { css } from "../../styled-system/css";
+import { AppLink } from "./app-link";
 import { NavLink } from "./nav-link";
 
 const navItems = [
@@ -24,9 +24,9 @@ export function SiteHeader() {
           paddingY: "16",
         })}
       >
-        <Link href="/" className={css({ fontWeight: "bold" })}>
+        <AppLink href="/" className={css({ fontWeight: "bold" })}>
           {SITE_NAME}
-        </Link>
+        </AppLink>
         <nav aria-label="メインメニュー">
           <ul className={css({ display: "flex", gap: "16" })}>
             {navItems.map((item) => (

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { siteOpenGraph } from "../lib/siteMetadata";
+import { AppLink } from "./_components/app-link";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -31,7 +31,7 @@ export default async function Home() {
         {navs.map((item) => {
           return (
             <li key={item.href}>
-              <Link href={item.href}>{item.label}</Link>
+              <AppLink href={item.href}>{item.label}</AppLink>
             </li>
           );
         })}

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { css } from "../../styled-system/css";
+import { AppLink } from "./app-link";
 
 export function SiteFooter() {
   return (
@@ -25,7 +25,7 @@ export function SiteFooter() {
             <a href="https://github.com/hi-lee-mon">GitHub</a>
           </li>
           <li>
-            <Link href="/design-system">デザインシステム</Link>
+            <AppLink href="/design-system">デザインシステム</AppLink>
           </li>
         </ul>
         <p>

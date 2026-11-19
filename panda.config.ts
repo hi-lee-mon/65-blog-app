@@ -42,6 +42,11 @@ export default defineConfig({
     tokens,
     semanticTokens,
     textStyles,
+    keyframes: {
+      linkPendingPulse: {
+        "50%": { opacity: "0.5" },
+      },
+    },
   },
   outdir: "styled-system",
 });

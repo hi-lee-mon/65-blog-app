@@ -77,9 +77,11 @@ export const tokens = defineTokens({
     64: { value: "4rem" },
   },
   sizes: {
+    8: { value: "0.5rem" },
     full: { value: "100%" },
     640: { value: "40rem" },
   },
+
   letterSpacings: {
     0: { value: "0" },
     1: { value: "0.01em" },
