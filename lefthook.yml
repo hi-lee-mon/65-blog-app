@@ -34,4 +34,4 @@ pre-push:
         - "theme/*"
         - "content/*"
         - "panda.config.ts"
-      run: bun run a11y
+      run: bun run ay

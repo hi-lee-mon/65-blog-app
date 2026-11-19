@@ -16,7 +16,7 @@
     "pg": "bun run panda codegen",
     "sb": "storybook dev -p 6006",
     "b:sb": "storybook build",
-    "a11y": "bun run b && playwright test"
+    "ay": "bun run b && playwright test"
   },
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",
