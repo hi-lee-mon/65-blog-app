@@ -48,5 +48,10 @@ export default defineConfig({
       },
     },
   },
+  "@media (prefers-reduced-motion: reduce)": {
+    "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
+      animation: "none",
+    },
+  },
   outdir: "styled-system",
 });

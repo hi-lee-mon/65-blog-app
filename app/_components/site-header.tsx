@@ -6,6 +6,7 @@ import { NavLink } from "./nav-link";
 const navItems = [
   { href: "/posts", label: "記事" },
   { href: "/tags", label: "タグ" },
+  { href: "/notes", label: "ノート" },
 ];
 
 export function SiteHeader() {

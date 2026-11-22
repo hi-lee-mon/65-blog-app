@@ -5,7 +5,7 @@ import { expect, test, type Page } from "@playwright/test";
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 // 一覧ページから記事とタグのページをたどるので、ここには入口だけを書く
-const ENTRY_PATHS = ["/", "/posts", "/tags", "/design-system"];
+const ENTRY_PATHS = ["/", "/posts", "/notes", "/tags", "/design-system"];
 const LIST_PATHS = ["/posts", "/tags"];
 
 async function collectPaths(page: Page) {

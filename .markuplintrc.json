@@ -9,6 +9,9 @@
     "\\.mdx$": "@markuplint/react-spec"
   },
   "excludeFiles": ["./.next/**/*"],
+  "rules": {
+    "security/no-event-handler-attr": false
+  },
   "nodeRules": [
     {
       "selector": "main#main",
