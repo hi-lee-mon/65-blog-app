@@ -5,7 +5,8 @@ import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../../lib/siteMetadata";
 import { css } from "../../../styled-system/css";
 import { PostCard } from "../../_components/post-card";
-import { Breadcrumb } from "../../_components/breadcrumb";
+import { PageContainer } from "../../_components/page-container";
+import { PageHeader } from "../../_components/page-header";
 
 const { getAllTags, getPostsByTag } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -49,15 +50,15 @@ export default async function Page({ params }: PageProps<"/tags/[tag]">) {
   }
 
   return (
-    <>
-      <Breadcrumb
+    <PageContainer>
+      <PageHeader
         parents={[
           { href: "/", label: "ホーム" },
           { href: "/tags", label: "タグ一覧" },
         ]}
+        title={`タグ: ${tag}`}
         current={tag}
       />
-      <h1>タグ: {tag}</h1>
       <ul className={css({ display: "flex", flexDirection: "column", gap: "16" })}>
         {posts.map(({ slug, frontmatter }) => (
           <li key={slug}>
@@ -65,6 +66,6 @@ export default async function Page({ params }: PageProps<"/tags/[tag]">) {
           </li>
         ))}
       </ul>
-    </>
+    </PageContainer>
   );
 }

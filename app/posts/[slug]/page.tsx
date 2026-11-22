@@ -7,6 +7,7 @@ import { css } from "../../../styled-system/css";
 import { prose } from "./prose";
 import { Tag } from "../../_components/tag";
 import { Breadcrumb } from "../../_components/breadcrumb";
+import { PageContainer } from "../../_components/page-container";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -52,15 +53,7 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
   const { frontmatter, Content, headings } = post;
 
   return (
-    <div
-      className={css({
-        width: "full",
-        maxWidth: "640",
-        marginX: "auto",
-        paddingX: "16",
-        paddingY: "48",
-      })}
-    >
+    <PageContainer>
       <Breadcrumb
         parents={[
           { href: "/", label: "ホーム" },
@@ -94,6 +87,6 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
           <Content />
         </div>
       </article>
-    </div>
+    </PageContainer>
   );
 }
