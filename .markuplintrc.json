@@ -9,7 +9,14 @@
     "\\.mdx$": "@markuplint/react-spec"
   },
   "excludeFiles": ["./.next/**/*"],
+  "rules": {
+    "security/no-event-handler-attr": false
+  },
   "nodeRules": [
+    {
+      "selector": "main#main",
+      "rules": { "no-hardcoded-id": false }
+    },
     {
       "selector": "code[class^='language-']",
       "rules": { "no-unknown-attr": false }

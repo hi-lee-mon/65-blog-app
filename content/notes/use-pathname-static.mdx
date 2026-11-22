@@ -1,0 +1,7 @@
+---
+title: usePathname が確定するとき
+date: 2026-11-15
+tags: [nextjs]
+---
+
+`generateStaticParams` で事前にビルドしたパスなら、`usePathname` の値もビルドのときに確定する。`<Suspense>` が要るのは、事前にビルドしていないパスを受けるとき。

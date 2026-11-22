@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { css } from "../../styled-system/css";
+import { AppLink } from "./app-link";
 
 type PostCardProps = { slug: string; title: string; date: string };
 
@@ -19,7 +19,7 @@ export function PostCard({ slug, title, date }: PostCardProps) {
       <time dateTime={date} className={css({ color: "fg.muted", fontSize: "14" })}>
         {date}
       </time>
-      <Link
+      <AppLink
         href={`/posts/${slug}`}
         className={css({
           color: "fg.link",
@@ -28,7 +28,7 @@ export function PostCard({ slug, title, date }: PostCardProps) {
         })}
       >
         {title}
-      </Link>
+      </AppLink>
     </article>
   );
 }

@@ -6,6 +6,7 @@ import { siteOpenGraph } from "../../../lib/siteMetadata";
 import { css } from "../../../styled-system/css";
 import { prose } from "./prose";
 import { Tag } from "../../_components/tag";
+import { Breadcrumb } from "../../_components/breadcrumb";
 
 const { getAllSlugs, getPost } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -51,7 +52,7 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
   const { frontmatter, Content, headings } = post;
 
   return (
-    <article
+    <div
       className={css({
         width: "full",
         maxWidth: "640",
@@ -60,30 +61,39 @@ export default async function Page({ params }: PageProps<"/posts/[slug]">) {
         paddingY: "48",
       })}
     >
-      <h1 className={css({ textStyle: "heading.1" })}>{frontmatter.title}</h1>
-      <time className={css({ color: "fg.muted" })}>{frontmatter.date}</time>
-      <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
-        {frontmatter.tags.map((tag) => (
-          <li key={tag}>
-            <Tag tag={tag} size="sm" />
-          </li>
-        ))}
-      </ul>
-      {headings.length > 0 && (
-        <nav aria-label="目次">
-          <ol>
-            {headings.map(({ id, text }) => (
-              <li key={id}>
-                <a href={`#${id}`}>{text}</a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      )}
-      <hr />
-      <div className={prose}>
-        <Content />
-      </div>
-    </article>
+      <Breadcrumb
+        parents={[
+          { href: "/", label: "ホーム" },
+          { href: "/posts", label: "記事一覧" },
+        ]}
+        current={frontmatter.title}
+      />
+      <article>
+        <h1 className={css({ textStyle: "heading.1" })}>{frontmatter.title}</h1>
+        <time className={css({ color: "fg.muted" })}>{frontmatter.date}</time>
+        <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
+          {frontmatter.tags.map((tag) => (
+            <li key={tag}>
+              <Tag tag={tag} size="sm" />
+            </li>
+          ))}
+        </ul>
+        {headings.length > 0 && (
+          <nav aria-label="目次">
+            <ol>
+              {headings.map(({ id, text }) => (
+                <li key={id}>
+                  <a href={`#${id}`}>{text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        <hr />
+        <div className={prose}>
+          <Content />
+        </div>
+      </article>
+    </div>
   );
 }

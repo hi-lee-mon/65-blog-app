@@ -4,6 +4,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { siteOpenGraph } from "../../lib/siteMetadata";
 import { TagLink } from "./_components/tag-link";
 import { css } from "../../styled-system/css";
+import { Breadcrumb } from "../_components/breadcrumb";
 
 const { getAllTags } = createPostReader(path.join(process.cwd(), "content"));
 
@@ -31,7 +32,8 @@ export default async function Page() {
   const tags = await getAllTags();
 
   return (
-    <main>
+    <>
+      <Breadcrumb parents={[{ href: "/", label: "ホーム" }]} current="タグ一覧" />
       <h1>タグ一覧</h1>
       <ul className={css({ display: "flex", flexWrap: "wrap", gap: "8" })}>
         {tags.map((tag) => (
@@ -40,6 +42,6 @@ export default async function Page() {
           </li>
         ))}
       </ul>
-    </main>
+    </>
   );
 }

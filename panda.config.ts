@@ -20,6 +20,16 @@ export default defineConfig({
       "--global-font-body": "{fonts.sans}",
       "--global-font-mono": "{fonts.mono}",
     },
+    // :focus はマウスでクリックしたときにもフォーカスを設定する。
+    // :focus-visible は、キーボードで操作したときのように
+    // 「フォーカスが要る」とブラウザが判断したときだけ当たる。
+    // マウスで使う人には余計なフォーカスを見せず、キーボードで使う人には必ず見せられる。
+    "*:focus-visible": {
+      outlineWidth: "2px",
+      outlineStyle: "solid",
+      outlineColor: "fg.default",
+      outlineOffset: "4",
+    },
     body: {
       background: "bg.default",
       color: "fg.default",
@@ -32,6 +42,16 @@ export default defineConfig({
     tokens,
     semanticTokens,
     textStyles,
+    keyframes: {
+      linkPendingPulse: {
+        "50%": { opacity: "0.5" },
+      },
+    },
+  },
+  "@media (prefers-reduced-motion: reduce)": {
+    "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
+      animation: "none",
+    },
   },
   outdir: "styled-system",
 });

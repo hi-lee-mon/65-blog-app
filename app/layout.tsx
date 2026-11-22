@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
 import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
 import Script from "next/script";
 import { css } from "../styled-system/css";
+import { SiteHeader } from "./_components/site-header";
+import { SiteFooter } from "./_components/site-footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,8 +48,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           flexDirection: "column",
         })}
       >
-        <Link href="/">ホーム</Link>
-        {children}
+        <a href="#main" className={css({ srOnly: true, _focusVisible: { srOnly: false } })}>
+          本文へスキップ
+        </a>
+        <SiteHeader />
+        <main id="main" className={css({ flex: "1" })}>
+          {children}
+        </main>
+        <SiteFooter />
         {process.env.CF_WEB_ANALYTICS_TOKEN && (
           <Script
             src="https://static.cloudflareinsights.com/beacon.min.js"
