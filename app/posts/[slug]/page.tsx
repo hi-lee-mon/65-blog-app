@@ -2,7 +2,7 @@ import path from "node:path";
 import { createPostReader } from "../../../lib/createPostReader";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { siteOpenGraph } from "../../../lib/siteMetadata";
+import { feedAlternateTypes, siteOpenGraph } from "../../../lib/siteMetadata";
 import { css } from "../../../styled-system/css";
 import { prose } from "./prose";
 import { Tag } from "../../_components/tag";
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/posts/[slug]">): 
 
   return {
     title: post.frontmatter.title,
-    alternates: { canonical: `/posts/${slug}` },
+    alternates: { canonical: `/posts/${slug}`, types: feedAlternateTypes },
     openGraph: {
       ...siteOpenGraph,
       type: "article",

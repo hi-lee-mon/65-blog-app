@@ -1,7 +1,7 @@
 import path from "node:path";
 import { createPostReader } from "../../lib/createPostReader";
 import { Metadata, ResolvingMetadata } from "next";
-import { siteOpenGraph } from "../../lib/siteMetadata";
+import { feedAlternateTypes, siteOpenGraph } from "../../lib/siteMetadata";
 import { css } from "../../styled-system/css";
 import { PostCard } from "../_components/post-card";
 import { PageContainer } from "../_components/page-container";
@@ -17,7 +17,7 @@ export async function generateMetadata(
   const { openGraph } = await parent;
   return {
     title: "記事一覧",
-    alternates: { canonical: "/posts" },
+    alternates: { canonical: "/posts", types: feedAlternateTypes },
     openGraph: {
       ...siteOpenGraph,
       type: "website",

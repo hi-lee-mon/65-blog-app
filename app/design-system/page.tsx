@@ -1,5 +1,5 @@
 import { Metadata, ResolvingMetadata } from "next";
-import { siteOpenGraph } from "../../lib/siteMetadata";
+import { feedAlternateTypes, siteOpenGraph } from "../../lib/siteMetadata";
 import { css } from "../../styled-system/css";
 import { Tag } from "../_components/tag";
 import { PostCard } from "../_components/post-card";
@@ -12,7 +12,7 @@ export async function generateMetadata(
   const { openGraph } = await parent;
   return {
     title: "デザインシステム",
-    alternates: { canonical: "/design-system" },
+    alternates: { canonical: "/design-system", types: feedAlternateTypes },
     openGraph: {
       ...siteOpenGraph,
       type: "website",

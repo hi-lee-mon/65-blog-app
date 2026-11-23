@@ -1,7 +1,7 @@
 import path from "node:path";
 import { Metadata } from "next";
 import { createPostReader } from "../lib/createPostReader";
-import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
+import { feedAlternateTypes, SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
 import { css } from "../styled-system/css";
 import { AppLink } from "./_components/app-link";
 import { linkStyle } from "./_components/style/link";
@@ -16,7 +16,7 @@ const postReader = createPostReader(path.join(process.cwd(), "content"));
 const noteReader = createPostReader(path.join(process.cwd(), "content", "notes"));
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", types: feedAlternateTypes },
   openGraph: { ...siteOpenGraph, type: "website", url: "/" },
 };
 

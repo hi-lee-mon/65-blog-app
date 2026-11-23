@@ -27,6 +27,10 @@ export function SiteFooter() {
           <li>
             <AppLink href="/design-system">デザインシステム</AppLink>
           </li>
+          <li>
+            {/* oxlint-disable-next-line next/no-html-link-for-pages -- XML は画面ではないので、Linkコンポーネントを使った画面遷移は不要 */}
+            <a href="/feed.xml">RSS フィード</a>
+          </li>
         </ul>
         <p>
           <small>© 2026 65banseki</small>
