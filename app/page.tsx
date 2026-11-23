@@ -1,41 +1,96 @@
+import path from "node:path";
 import { Metadata } from "next";
-import { siteOpenGraph } from "../lib/siteMetadata";
+import { createPostReader } from "../lib/createPostReader";
+import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
+import { css } from "../styled-system/css";
 import { AppLink } from "./_components/app-link";
+import { NoteCard } from "./_components/note-card";
+import { PageContainer } from "./_components/page-container";
+import { PostCard } from "./_components/post-card";
+
+const LATEST_COUNT = 3;
+const postReader = createPostReader(path.join(process.cwd(), "content"));
+const noteReader = createPostReader(path.join(process.cwd(), "content", "notes"));
+const linkStyle = css({ color: "fg.link", textDecoration: "underline" });
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: { ...siteOpenGraph, type: "website", url: "/" },
 };
 
-const navs = [
-  {
-    href: "/posts",
-    label: "記事一覧",
-  },
-  {
-    href: "/tags",
-    label: "タグ一覧",
-  },
-  {
-    href: "/design-system",
-    label: "デザインシステム",
-  },
-];
-
 export default async function Home() {
   "use cache";
 
+  const posts = (await postReader.getAllPosts()).slice(0, LATEST_COUNT);
+  const latestNotes = (await noteReader.getAllPosts()).slice(0, LATEST_COUNT);
+  const notes = await Promise.all(
+    latestNotes.map(async ({ slug }) => ({
+      slug,
+      note: await noteReader.getPost(slug),
+    })),
+  );
+
   return (
-    <nav>
-      <ul>
-        {navs.map((item) => {
-          return (
-            <li key={item.href}>
-              <AppLink href={item.href}>{item.label}</AppLink>
+    <PageContainer>
+      <header className={css({ marginBlockEnd: "48" })}>
+        <h1 className={css({ textStyle: "heading.1" })}>{SITE_NAME}</h1>
+        <p>自分の手で試した記録を残しています。</p>
+      </header>
+      <section aria-labelledby="latest-posts" className={css({ marginBlockEnd: "48" })}>
+        <h2 id="latest-posts" className={css({ textStyle: "heading.2", marginBlockEnd: "16" })}>
+          最新の記事
+        </h2>
+        <ul
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            gap: "16",
+          })}
+        >
+          {posts.map(({ slug, frontmatter }) => (
+            <li key={slug}>
+              <PostCard slug={slug} title={frontmatter.title} date={frontmatter.date} />
             </li>
-          );
-        })}
-      </ul>
-    </nav>
+          ))}
+        </ul>
+        <p className={css({ marginBlockStart: "16" })}>
+          <AppLink href="/posts" className={linkStyle}>
+            記事をすべて見る
+          </AppLink>
+        </p>
+      </section>
+      <section aria-labelledby="latest-notes">
+        <h2 id="latest-notes" className={css({ textStyle: "heading.2", marginBlockEnd: "16" })}>
+          最新のふせん
+        </h2>
+        <ul
+          className={css({
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 16rem), 1fr))",
+            gap: "16",
+          })}
+        >
+          {notes.map(({ slug, note }) =>
+            note ? (
+              <li key={slug}>
+                <NoteCard
+                  slug={slug}
+                  title={note.frontmatter.title}
+                  date={note.frontmatter.date}
+                  headingLevel="h3"
+                >
+                  <note.Content />
+                </NoteCard>
+              </li>
+            ) : null,
+          )}
+        </ul>
+        <p className={css({ marginBlockStart: "16" })}>
+          <AppLink href="/notes" className={linkStyle}>
+            ふせんをすべて見る
+          </AppLink>
+        </p>
+      </section>
+    </PageContainer>
   );
 }

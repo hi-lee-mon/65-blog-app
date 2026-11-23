@@ -8,6 +8,7 @@ type NoteCardProps = {
   title: string;
   date: string;
   children: ReactNode;
+  headingLevel?: "h2" | "h3";
 };
 
 const bodyStyle = css({
@@ -28,7 +29,8 @@ const surfaceStyle = css({
   bg: "bg.default",
 });
 
-export function NoteCard({ slug, title, date, children }: NoteCardProps) {
+export function NoteCard({ slug, title, date, children, headingLevel = "h2" }: NoteCardProps) {
+  const Heading = headingLevel;
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const name = `note-${slug}`;
@@ -54,7 +56,7 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
           <div className={surfaceStyle} />
         </ViewTransition>
       )}
-      <h2 className={css({ fontSize: "18", fontWeight: "bold" })}>
+      <Heading className={css({ fontSize: "18", fontWeight: "bold" })}>
         <button
           type="button"
           onClick={openDialog}
@@ -66,7 +68,7 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
         >
           {title}
         </button>
-      </h2>
+      </Heading>
       <time dateTime={date} className={css({ color: "fg.muted", fontSize: "14" })}>
         {date}
       </time>
@@ -118,9 +120,9 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
             <button type="button" onClick={closeDialog}>
               閉じる
             </button>
-            <h2 id={titleId} className={css({ fontSize: "18", fontWeight: "bold" })}>
+            <Heading id={titleId} className={css({ fontSize: "18", fontWeight: "bold" })}>
               {title}
-            </h2>
+            </Heading>
             <time dateTime={date} className={css({ color: "fg.muted", fontSize: "14" })}>
               {date}
             </time>

@@ -15,7 +15,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { openGraph } = await parent;
   return {
-    title: "付箋",
+    title: "ふせん",
     alternates: { canonical: "/notes" },
     openGraph: {
       ...siteOpenGraph,
@@ -38,7 +38,7 @@ export default async function Page() {
     <PageContainer>
       <PageHeader
         parents={[{ href: "/", label: "ホーム" }]}
-        title="付箋"
+        title="ふせん"
         description="記事になる前の、書きかけの短いメモです。"
       />
       <ul
