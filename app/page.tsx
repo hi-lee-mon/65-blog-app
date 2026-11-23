@@ -4,14 +4,16 @@ import { createPostReader } from "../lib/createPostReader";
 import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
 import { css } from "../styled-system/css";
 import { AppLink } from "./_components/app-link";
+import { linkStyle } from "./_components/style/link";
 import { NoteCard } from "./_components/note-card";
 import { PageContainer } from "./_components/page-container";
 import { PostCard } from "./_components/post-card";
+import Image from "next/image";
+import avatar from "./_assets/avatar.png";
 
 const LATEST_COUNT = 3;
 const postReader = createPostReader(path.join(process.cwd(), "content"));
 const noteReader = createPostReader(path.join(process.cwd(), "content", "notes"));
-const linkStyle = css({ color: "fg.link", textDecoration: "underline" });
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -32,9 +34,28 @@ export default async function Home() {
 
   return (
     <PageContainer>
-      <header className={css({ marginBlockEnd: "48" })}>
-        <h1 className={css({ textStyle: "heading.1" })}>{SITE_NAME}</h1>
-        <p>自分の手で試した記録を残しています。</p>
+      <header
+        className={css({
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "16",
+          marginBlockEnd: "48",
+        })}
+      >
+        <Image
+          src={avatar}
+          // アバターは読み上げる必要ないのでaltはあえて空文字にする
+          alt=""
+          width={96}
+          height={96}
+          placeholder="blur"
+          className={css({ borderRadius: "full" })}
+        />
+        <div>
+          <h1 className={css({ textStyle: "heading.1" })}>{SITE_NAME}</h1>
+          <p>自分の手で試した記録を残しています。</p>
+        </div>
       </header>
       <section aria-labelledby="latest-posts" className={css({ marginBlockEnd: "48" })}>
         <h2 id="latest-posts" className={css({ textStyle: "heading.2", marginBlockEnd: "16" })}>

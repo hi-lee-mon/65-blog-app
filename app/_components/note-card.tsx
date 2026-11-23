@@ -2,6 +2,7 @@
 
 import { startTransition, useId, useState, ViewTransition, type ReactNode } from "react";
 import { css, cx } from "../../styled-system/css";
+import { linkStyleRaw } from "./style/link";
 
 type NoteCardProps = {
   slug: string;
@@ -14,7 +15,7 @@ type NoteCardProps = {
 const bodyStyle = css({
   "& > * + *": { marginTop: "8" },
   "& ul": { listStyleType: "disc", paddingInlineStart: "24" },
-  "& a": { color: "fg.link", textDecoration: "underline" },
+  "& a": linkStyleRaw,
   "& pre": { padding: "16", overflowX: "auto" },
 });
 
