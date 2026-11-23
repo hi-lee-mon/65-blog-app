@@ -16,6 +16,22 @@ export default defineConfig({
       name: "dark",
       use: { ...devices["Desktop Chrome"], colorScheme: "dark" },
     },
+    {
+      name: "mobile-light",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 320, height: 700 },
+        colorScheme: "light",
+      },
+    },
+    {
+      name: "mobile-dark",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 320, height: 700 },
+        colorScheme: "dark",
+      },
+    },
   ],
   webServer: {
     command: "bun run s -p 3100",

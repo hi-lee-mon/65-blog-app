@@ -6,9 +6,8 @@ import { NavLink } from "./nav-link";
 const navItems = [
   { href: "/posts", label: "記事" },
   { href: "/tags", label: "タグ" },
-  { href: "/notes", label: "ノート" },
+  { href: "/notes", label: "ふせん" },
 ];
-
 export function SiteHeader() {
   return (
     <header className={css({ borderBottomWidth: "1", borderColor: "border.default" })}>

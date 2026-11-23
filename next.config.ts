@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+const CONTENT_SECURITY_POLICY =
+  "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'";
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
@@ -21,6 +24,14 @@ const nextConfig: NextConfig = {
         has: [{ type: "host", value: "65-blog-app\\.vercel\\.app" }], // host名が左記のときだけ発動
         destination: "https://www.65banseki.dev/:path*",
         permanent: true, // 308（恒久的な転送）にする
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [{ key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY }],
       },
     ];
   },

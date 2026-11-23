@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { css } from "../../styled-system/css";
+import { linkStyle } from "./style/link";
 
 type BreadcrumbParent = { href: string; label: string };
 
@@ -21,10 +22,7 @@ export function Breadcrumb({ parents, current }: BreadcrumbProps) {
       >
         {parents.map((parent) => (
           <li key={parent.href} className={css({ display: "flex", columnGap: "8" })}>
-            <Link
-              href={parent.href}
-              className={css({ color: "fg.link", textDecoration: "underline" })}
-            >
+            <Link href={parent.href} className={linkStyle}>
               {parent.label}
             </Link>
             <span aria-hidden="true" className={css({ color: "fg.muted" })}>

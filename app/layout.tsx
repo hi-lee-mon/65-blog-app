@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SITE_NAME, siteOpenGraph } from "../lib/siteMetadata";
+import {
+  feedAlternateTypes,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  siteOpenGraph,
+} from "../lib/siteMetadata";
 import Script from "next/script";
 import { css } from "../styled-system/css";
 import { SiteHeader } from "./_components/site-header";
@@ -18,12 +24,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.65banseki.dev"), // 全ページのメタデータで継承される以降相対パスで書くことができる（/postsはhttps://www.65banseki.dev/postsになる）
+  metadataBase: new URL(SITE_URL), // 全ページのメタデータで継承される以降相対パスで書くことができる（/postsはhttps://www.65banseki.dev/postsになる）
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description: "65banseki の技術ブログ。自分の手で試した記録を残しています。",
+  description: SITE_DESCRIPTION,
+  alternates: { types: feedAlternateTypes },
   openGraph: {
     ...siteOpenGraph,
     type: "website",

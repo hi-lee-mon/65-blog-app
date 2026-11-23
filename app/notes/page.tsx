@@ -1,10 +1,11 @@
 import path from "node:path";
 import { Metadata, ResolvingMetadata } from "next";
 import { createPostReader } from "../../lib/createPostReader";
-import { siteOpenGraph } from "../../lib/siteMetadata";
+import { feedAlternateTypes, siteOpenGraph } from "../../lib/siteMetadata";
 import { css } from "../../styled-system/css";
-import { Breadcrumb } from "../_components/breadcrumb";
 import { NoteCard } from "../_components/note-card";
+import { PageContainer } from "../_components/page-container";
+import { PageHeader } from "../_components/page-header";
 
 const { getAllPosts, getPost } = createPostReader(path.join(process.cwd(), "content", "notes"));
 
@@ -14,8 +15,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { openGraph } = await parent;
   return {
-    title: "付箋",
-    alternates: { canonical: "/notes" },
+    title: "ふせん",
+    alternates: { canonical: "/notes", types: feedAlternateTypes },
     openGraph: {
       ...siteOpenGraph,
       type: "website",
@@ -34,18 +35,12 @@ export default async function Page() {
   );
 
   return (
-    <div
-      className={css({
-        width: "full",
-        maxWidth: "640",
-        marginX: "auto",
-        paddingX: "16",
-        paddingY: "48",
-      })}
-    >
-      <Breadcrumb parents={[{ href: "/", label: "ホーム" }]} current="付箋" />
-      <h1>付箋</h1>
-      <p>記事になる前の、書きかけの短いメモです。</p>
+    <PageContainer>
+      <PageHeader
+        parents={[{ href: "/", label: "ホーム" }]}
+        title="ふせん"
+        description="記事になる前の、書きかけの短いメモです。"
+      />
       <ul
         className={css({
           display: "grid",
@@ -66,6 +61,6 @@ export default async function Page() {
           ) : null,
         )}
       </ul>
-    </div>
+    </PageContainer>
   );
 }

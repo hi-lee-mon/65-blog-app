@@ -5,7 +5,7 @@ import { expect, test, type Page } from "@playwright/test";
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 // 一覧ページから記事とタグのページをたどるので、ここには入口だけを書く
-const ENTRY_PATHS = ["/", "/posts", "/notes", "/tags", "/design-system"];
+const ENTRY_PATHS = ["/", "/posts", "/notes", "/tags", "/design-system", "/no-such-page"];
 const LIST_PATHS = ["/posts", "/tags"];
 
 async function collectPaths(page: Page) {
@@ -39,6 +39,17 @@ test("サイト内のページに WCAG 2.2 AA の違反がない", async ({ page
     await test.step(path, async () => {
       await page.goto(path);
       expect.soft(await findViolations(page), path).toEqual([]);
+      const hasOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      );
+      expect.soft(hasOverflow, `${path} に横スクロールがある`).toBe(false);
     });
   }
+});
+
+test("ふせんのダイアログを開いた状態に WCAG 2.2 AA の違反がない", async ({ page }) => {
+  await page.goto("/notes");
+  await page.getByRole("main").getByRole("button").first().click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect(await findViolations(page)).toEqual([]);
 });

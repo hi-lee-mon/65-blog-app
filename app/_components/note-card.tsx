@@ -2,18 +2,20 @@
 
 import { startTransition, useId, useState, ViewTransition, type ReactNode } from "react";
 import { css, cx } from "../../styled-system/css";
+import { linkStyleRaw } from "./style/link";
 
 type NoteCardProps = {
   slug: string;
   title: string;
   date: string;
   children: ReactNode;
+  headingLevel?: "h2" | "h3";
 };
 
 const bodyStyle = css({
   "& > * + *": { marginTop: "8" },
   "& ul": { listStyleType: "disc", paddingInlineStart: "24" },
-  "& a": { color: "fg.link", textDecoration: "underline" },
+  "& a": linkStyleRaw,
   "& pre": { padding: "16", overflowX: "auto" },
 });
 
@@ -28,7 +30,8 @@ const surfaceStyle = css({
   bg: "bg.default",
 });
 
-export function NoteCard({ slug, title, date, children }: NoteCardProps) {
+export function NoteCard({ slug, title, date, children, headingLevel = "h2" }: NoteCardProps) {
+  const Heading = headingLevel;
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const name = `note-${slug}`;
@@ -37,7 +40,7 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
   const closeDialog = () => startTransition(() => setOpen(false));
 
   return (
-    <article
+    <div
       className={css({
         position: "relative",
         isolation: "isolate",
@@ -54,7 +57,7 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
           <div className={surfaceStyle} />
         </ViewTransition>
       )}
-      <h2 className={css({ fontSize: "18", fontWeight: "bold" })}>
+      <Heading className={css({ fontSize: "18", fontWeight: "bold" })}>
         <button
           type="button"
           onClick={openDialog}
@@ -66,7 +69,7 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
         >
           {title}
         </button>
-      </h2>
+      </Heading>
       <time dateTime={date} className={css({ color: "fg.muted", fontSize: "14" })}>
         {date}
       </time>
@@ -118,9 +121,9 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
             <button type="button" onClick={closeDialog}>
               閉じる
             </button>
-            <h2 id={titleId} className={css({ fontSize: "18", fontWeight: "bold" })}>
+            <Heading id={titleId} className={css({ fontSize: "18", fontWeight: "bold" })}>
               {title}
-            </h2>
+            </Heading>
             <time dateTime={date} className={css({ color: "fg.muted", fontSize: "14" })}>
               {date}
             </time>
@@ -128,6 +131,6 @@ export function NoteCard({ slug, title, date, children }: NoteCardProps) {
           </dialog>
         </ViewTransition>
       )}
-    </article>
+    </div>
   );
 }

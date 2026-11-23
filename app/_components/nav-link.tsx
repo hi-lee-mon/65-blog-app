@@ -9,15 +9,20 @@ type NavLinkProps = { href: string; children: ReactNode };
 
 export function NavLink({ href, children }: NavLinkProps) {
   const pathname = usePathname();
-  const isCurrent = pathname === href || pathname.startsWith(`${href}/`);
+  const isCurrentPage = pathname === href;
+  const isInSection = pathname.startsWith(`${href}/`);
 
   return (
     <AppLink
       href={href}
-      aria-current={isCurrent ? "page" : undefined}
+      // 詳細ページのときはaria-currentをtrueに設定することで一覧と詳細を別として判定する
+      aria-current={isCurrentPage ? "page" : isInSection ? "true" : undefined}
       className={css({
+        display: "inline-flex",
+        alignItems: "center",
+        minHeight: "24",
         _hover: { textDecoration: "underline" },
-        _currentPage: { fontWeight: "bold", textDecoration: "underline" },
+        "&[aria-current]": { fontWeight: "bold", textDecoration: "underline" },
       })}
     >
       {children}
