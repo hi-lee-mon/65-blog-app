@@ -8,4 +8,11 @@ export const prose = css({
   "& a": linkStyleRaw,
   "& pre": { padding: "16", overflowX: "auto", marginBottom: "16" },
   "& code": { letterSpacing: "0" },
+  "& table": { width: "full", borderCollapse: "collapse", marginBottom: "16" },
+  "& th, & td": {
+    borderWidth: "1",
+    borderColor: "border.default",
+    padding: "8",
+    textAlign: "start",
+  },
 });

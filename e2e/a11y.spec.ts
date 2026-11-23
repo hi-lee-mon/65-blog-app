@@ -39,6 +39,17 @@ test("サイト内のページに WCAG 2.2 AA の違反がない", async ({ page
     await test.step(path, async () => {
       await page.goto(path);
       expect.soft(await findViolations(page), path).toEqual([]);
+      const hasOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      );
+      expect.soft(hasOverflow, `${path} に横スクロールがある`).toBe(false);
     });
   }
+});
+
+test("ふせんのダイアログを開いた状態に WCAG 2.2 AA の違反がない", async ({ page }) => {
+  await page.goto("/notes");
+  await page.getByRole("main").getByRole("button").first().click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect(await findViolations(page)).toEqual([]);
 });

@@ -46,6 +46,39 @@ frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'
 
 この形では XSS（ページに悪意のあるスクリプトを埋め込む攻撃）を止められない。このサイトにはログイン、フォーム、読者の投稿がなく、原稿を書くのも本人だけなので、攻撃の入口は小さいと判断した。
 
+### 4-0 に一覧カードの a11y 修正を含める
+
+`PostCard` と `NoteCard` の `article` は名前がなく、VoiceOver で「記事」だけが繰り返し読まれる。本人の判断で、この修正を 4-0 に含める（2026-11-23）。カードの `article` を `div` にし、`li` と見出しで構造を伝える。記事の詳細ページの `article` は残す。
+
+同じ日の監査で見つかった次の項目は、4-0 のチケットを作るときに範囲を決める。
+
+| 優先 | 場所                              | 内容                                                                     | 根拠       |
+| ---- | --------------------------------- | ------------------------------------------------------------------------ | ---------- |
+| 高   | `panda.config.ts:51`              | 動きを減らす設定が `globalCss` の外にあり、ViewTransition が止まらない   | WCAG 2.3.3 |
+| 高   | `/posts/cloudflare-web-analytics` | 言語指定のないコードブロックを、キーボードで横にスクロールできない       | WCAG 2.1.1 |
+| 高   | `/posts/lib-or-util`              | Markdown の表が表にならず、`\|` の並んだ文字として表示される             | WCAG 1.3.1 |
+| 高   | `app/_components/nav-link.tsx:12` | 記事やタグの子ページでも、ナビに `aria-current="page"` が付く            | WAI-ARIA   |
+| 高   | `content/ogp.mdx`                 | ページの題が `content/dns.mdx` と重複している                            | WCAG 2.4.2 |
+| 中   | `playwright.config.ts`            | axe の検査が PC 幅だけで、スマートフォン幅とダイアログを開いた状態がない | 検査の漏れ |
+| 中   | カードの `ul`                     | `list-style: none` のため、Safari で一覧として伝わらないおそれがある     | 未確認     |
+| 中   | コードブロック                    | フォーカスできるが、名前がない                                           | WCAG 4.1.2 |
+| 中   | ヘッダーとフッターのリンク        | 押せる範囲が小さい（フッターの X は 8×18px）。axe の基準は満たす         | WCAG 2.5.8 |
+| 低   | `opengraph-image.tsx`             | 共有画像の `alt` が内容ではなく画像の種類を説明している                  | WCAG 1.1.1 |
+| 低   | `/design-system`                  | 見本のタグのリンク先が 404 になる                                        | WCAG 2.4.4 |
+
+#### 4-0 の受け入れ条件に入れる確かめ方
+
+4-0 のチケットを作るときは、上の表の行番号を信じず、最新のコードで全項目を調べ直す。範囲から外す項目は、理由を確認事項に書く。修正の前に axe の検査範囲を広げ、今の不具合で検査が落ちることを先に確かめる。
+
+- カード: `/`、`/posts`、`/notes` のアクセシビリティツリーに、名前のない `article` が0個ある。修正前は順に6個、11個、5個。`/posts/[slug]` の `article` は1個のまま
+- 動きを減らす設定: Playwright の `reducedMotion: "reduce"` で `/notes` のダイアログを開き、`::view-transition` のアニメーションが0個になる。修正前は6個
+- コードブロック: 幅 320px の全記事で、axe の `scrollable-region-focusable` が0件になる。修正前は `/posts/cloudflare-web-analytics` で1件
+- 表: `/posts/lib-or-util` の `main` に `|` で始まる段落がない。表として残すなら `table` がある
+- 現在地: `/posts/[slug]` と `/tags/[tag]` のナビに `aria-current="page"` がなく、`/posts` と `/tags` のナビにはある
+- ページの題: 全ページの `document.title` に重複がない。修正前は `/posts/dns` と `/posts/ogp` が重複
+- axe の検査範囲: `bun run ay` が、PC 幅に加えて幅 320px とダイアログを開いた状態を、明るい表示と暗い表示で検査する
+- カードの一覧: Safari の VoiceOver で、一覧と項目数が読まれる。読まれないときは `role="list"` を足す
+
 ## 採らなかった案
 
 - **sitemap と RSS を公開の直後に足す。** いちばん早く出せるが、検索エンジンに見つかるのが遅れ、最初の読者が購読できない

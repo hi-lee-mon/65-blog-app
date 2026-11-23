@@ -70,7 +70,12 @@ export default async function Home() {
         >
           {posts.map(({ slug, frontmatter }) => (
             <li key={slug}>
-              <PostCard slug={slug} title={frontmatter.title} date={frontmatter.date} />
+              <PostCard
+                slug={slug}
+                title={frontmatter.title}
+                date={frontmatter.date}
+                headingLevel="h3"
+              />
             </li>
           ))}
         </ul>

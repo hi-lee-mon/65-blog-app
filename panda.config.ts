@@ -30,6 +30,12 @@ export default defineConfig({
       outlineColor: "fg.default",
       outlineOffset: "4",
     },
+    "@media (prefers-reduced-motion: reduce)": {
+      "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
+        animation: "none",
+      },
+    },
+
     body: {
       background: "bg.default",
       color: "fg.default",
@@ -46,11 +52,6 @@ export default defineConfig({
       linkPendingPulse: {
         "50%": { opacity: "0.5" },
       },
-    },
-  },
-  "@media (prefers-reduced-motion: reduce)": {
-    "::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)": {
-      animation: "none",
     },
   },
   outdir: "styled-system",

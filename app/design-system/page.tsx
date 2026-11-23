@@ -52,14 +52,19 @@ export default function Page() {
             alignItems: "center",
           })}
         >
-          <Tag tag="ラベル(sm)" size="sm" />
-          <Tag tag="ラベル(md)" size="md" />
+          <Tag tag="blog" size="sm" />
+          <Tag tag="css" size="md" />
         </div>
       </section>
 
       <section className={section}>
         <h2 className={css({ textStyle: "heading.2" })}>PostCard</h2>
-        <PostCard slug="blog" title="65banseki.devを作ってみた" date="2026-11-06" />
+        <PostCard
+          slug="blog"
+          title="65banseki.devを作ってみた"
+          date="2026-11-06"
+          headingLevel="h3"
+        />
       </section>
     </div>
   );

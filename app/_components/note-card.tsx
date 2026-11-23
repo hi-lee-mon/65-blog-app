@@ -40,7 +40,7 @@ export function NoteCard({ slug, title, date, children, headingLevel = "h2" }: N
   const closeDialog = () => startTransition(() => setOpen(false));
 
   return (
-    <article
+    <div
       className={css({
         position: "relative",
         isolation: "isolate",
@@ -131,6 +131,6 @@ export function NoteCard({ slug, title, date, children, headingLevel = "h2" }: N
           </dialog>
         </ViewTransition>
       )}
-    </article>
+    </div>
   );
 }

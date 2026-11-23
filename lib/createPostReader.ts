@@ -1,5 +1,5 @@
 import { evaluate } from "@mdx-js/mdx";
-import rehypeShiki from "@shikijs/rehype";
+import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import * as runtime from "react/jsx-runtime";
@@ -8,9 +8,20 @@ import { matter } from "vfile-matter";
 import * as v from "valibot";
 import rehypeSlug from "rehype-slug";
 import { rehypeCollectHeadings } from "./rehypeCollectHeadings";
+import remarkGfm from "remark-gfm";
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 const TAG_PATTERN = /^[a-z0-9]{1,18}$/;
+
+type ShikiTransformer = NonNullable<RehypeShikiOptions["transformers"]>[number];
+
+const nameCodeBlock: ShikiTransformer = {
+  pre(node) {
+    const { lang } = this.options;
+    node.properties.role = "group";
+    node.properties["aria-label"] = lang === "text" ? "コード例" : `${lang} のコード例`;
+  },
+};
 
 const FrontmatterSchema = v.object({
   title: v.pipe(v.string(), v.nonEmpty()),
@@ -50,6 +61,7 @@ export function createPostReader(contentDir: string) {
         ...runtime,
         rehypePlugins: [
           rehypeSlug,
+          remarkGfm,
           rehypeCollectHeadings,
           [
             rehypeShiki,
@@ -59,6 +71,9 @@ export function createPostReader(contentDir: string) {
                 dark: "github-dark-high-contrast",
               },
               defaultColor: "light-dark()",
+              // 言語の指定がないコードブロックも Shiki に通し、キーボードで横にスクロールできるようにする
+              defaultLanguage: "text",
+              transformers: [nameCodeBlock],
             },
           ],
         ],
